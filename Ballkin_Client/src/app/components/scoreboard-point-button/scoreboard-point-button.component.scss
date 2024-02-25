@@ -1,0 +1,21 @@
+.point-button {
+    height:100%;
+    width: 5vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.point-value {
+    display: flex;
+    align-items: center;
+    flex-grow: 3;
+    font-size: 7vh;
+}
+
+.point-percentage {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    font-size: 2vh;
+}
