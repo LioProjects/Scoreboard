@@ -16,6 +16,7 @@ export class ScoreboardPointButtonComponent {
 
   onPointButtonClick(){
     this.gamePoints.push(new PlayerGamePoint(this.player, this.pointValue))
+    console.log("Player is " + this.player.name + " who scored " + this.pointValue + " " + this.gamePoints);
   }
 
   calculatePointValuePercentage(): number {

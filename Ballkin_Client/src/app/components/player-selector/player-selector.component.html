@@ -1,7 +1,4 @@
-<select class="player-selector" id="players" name="players">
+<select class="player-selector" id="players" name="players" [(ngModel)]="selectedPlayer" (ngModelChange)="onPlayerSelect($event)">
   <option value="" disabled selected hidden>Select Player</option>
-  <option value="player1">Lionel</option>
-  <option value="player2">Noel</option>
-  <option value="player3">Nico</option>
-  <!-- Add more options for each player -->
+  <option *ngFor="let player of (players$ | async)" [ngValue]="player">{{ player.name }}</option>
 </select>
