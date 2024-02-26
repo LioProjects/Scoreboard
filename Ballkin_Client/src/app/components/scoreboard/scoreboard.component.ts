@@ -31,10 +31,28 @@ export class ScoreboardComponent {
         console.log("save Game to be implemented");
     }
 
+    getAvgPlayerScore(player: Player): number{
+        if (!player){
+            return 0;
+        }
+        const playerShotsTaken = this.getPlayerShotsTaken(player);
+        if (playerShotsTaken === 0) {
+            return 0;
+        }
+        return Number((this.getPlayerScore(player)/playerShotsTaken).toFixed(2));
+    }
+
     getPlayerScore (player: Player): number{
         if (!player){
             return 0;
         }
         return this.gamePoints.filter(x => x.player === player).map(x => x.pointValue).reduce((total, currentValue) => total + currentValue, 0);
+    }
+
+    getPlayerShotsTaken(player: Player): number{
+        if (!player){
+            return 0;
+        }
+        return this.gamePoints.filter(x => x.player === player).length
     }
 }

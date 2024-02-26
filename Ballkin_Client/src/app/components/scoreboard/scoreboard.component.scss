@@ -32,6 +32,7 @@
     justify-content: space-between;
 }
 .player-points{
+    position: relative;
     height: 35%;
     width: 60%;
     justify-content: center;
@@ -39,6 +40,20 @@
     display: flex;
     font-size: 15vh;
     background-color: darkgray;
+}
+
+.player-shots-taken{
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    font-size: 2vh;
+}
+
+.avg-point-value{
+    position: absolute;
+    left: 1%;
+    bottom: 1%;
+    font-size: 2vh;
 }
 
 .control-buttons{

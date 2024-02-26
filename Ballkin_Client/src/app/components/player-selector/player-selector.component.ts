@@ -26,7 +26,7 @@ export class PlayerSelectorComponent{
           return of(players); 
         })
       );
-      console.log("available players are" + this.players$)
+      console.log("current selected player "+ this.selectedPlayer)
   }
 
   onPlayerSelect(player: Player) {
