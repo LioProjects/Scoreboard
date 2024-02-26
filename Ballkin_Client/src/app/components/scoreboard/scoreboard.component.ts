@@ -13,10 +13,23 @@ import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/score
     imports: [ScoreboardPointButtonComponent, PlayerSelectorComponent]
 })
 export class ScoreboardComponent {
-    player1= {name: "Lionel", id: 1}
-    player2= {name: "Noel", id: 2}
 
+    player1: Player = { id: -1, name: ''};
+    player2: Player = { id: -1, name: ''};
+;
     gamePoints: PlayerGamePoint[] = [];
+
+    undo() {
+        this.gamePoints.pop();
+    }
+    
+    resetGame () {
+        this.gamePoints = [];
+    }
+    
+    saveGame() {
+        console.log("save Game to be implemented");
+    }
 
     getPlayerScore (player: Player): number{
         if (!player){

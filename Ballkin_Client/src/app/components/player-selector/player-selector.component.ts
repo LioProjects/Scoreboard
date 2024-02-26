@@ -23,8 +23,7 @@ export class PlayerSelectorComponent{
     this.players$ = this.playerService.getPlayers()
       .pipe(
         switchMap(players => {
-          // Handle the asynchronous operation here if needed
-          return of(players); // Return the players array
+          return of(players); 
         })
       );
       console.log("available players are" + this.players$)
@@ -32,7 +31,6 @@ export class PlayerSelectorComponent{
 
   onPlayerSelect(player: Player) {
     this.selectedPlayer = player;
-    console.log("player selected: " + this.selectedPlayer.name)
     this.selectedPlayerChange.emit(player);
   }
 }
