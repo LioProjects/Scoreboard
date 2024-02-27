@@ -1,4 +1,4 @@
-<select class="player-selector" id="players" name="players" [(ngModel)]="selectedPlayer" (ngModelChange)="onPlayerSelect($event)">
-  <option *ngIf="selectedPlayer===undefined" value="" disabled selected hidden>Select Player</option>
+<select class="player-selector" id="players" name="players" [ngModel]="selectedPlayer" (ngModelChange)="onPlayerSelect($event)">
+  <option *ngIf="selectedPlayer?.id === -1" [ngValue]="" disabled hidden selected>Select Player</option>
   <option *ngFor="let player of (players$ | async)" [ngValue]="player">{{ player.name }}</option>
 </select>

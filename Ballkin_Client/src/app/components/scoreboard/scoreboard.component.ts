@@ -14,9 +14,9 @@ import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/score
 })
 export class ScoreboardComponent {
 
-    player1: Player = { id: -1, name: ''};
-    player2: Player = { id: -1, name: ''};
-;
+    player1: Player = { id: -1, name: 'Select Player'};
+    player2: Player = { id: -1, name: 'Select Player'};
+
     gamePoints: PlayerGamePoint[] = [];
 
     undo() {

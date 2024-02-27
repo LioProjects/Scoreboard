@@ -26,7 +26,7 @@ export class PlayerSelectorComponent{
           return of(players); 
         })
       );
-      console.log("current selected player "+ this.selectedPlayer)
+      setTimeout(() => console.log("current selected player "+ (this.selectedPlayer?.id === -1)), 0);      
   }
 
   onPlayerSelect(player: Player) {
