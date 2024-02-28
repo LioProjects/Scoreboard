@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
 import { PlayerSelectorComponent } from "../player-selector/player-selector.component";
+import { ScoreboardGraphComponent } from "../scoreboard-graph/scoreboard-graph.component";
 import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/scoreboard-point-button.component';
 
 @Component({
@@ -10,7 +11,7 @@ import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/score
     standalone: true,
     templateUrl: './scoreboard.component.html',
     styleUrl: './scoreboard.component.scss',
-    imports: [ScoreboardPointButtonComponent, PlayerSelectorComponent]
+    imports: [ScoreboardPointButtonComponent, PlayerSelectorComponent, ScoreboardGraphComponent]
 })
 export class ScoreboardComponent {
 

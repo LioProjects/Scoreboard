@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
 
@@ -13,9 +13,12 @@ export class ScoreboardPointButtonComponent {
   @Input() pointValue!: number;
   @Input() player!: Player;
   @Input() gamePoints!: PlayerGamePoint[];
+  @Output() gamePointsChange = new EventEmitter<PlayerGamePoint[]>();
+
 
   onPointButtonClick(){
-    this.gamePoints.push(new PlayerGamePoint(this.player, this.pointValue))
+    this.gamePoints = [...this.gamePoints, new PlayerGamePoint(this.player, this.pointValue)];
+    this.gamePointsChange.emit(this.gamePoints);
     console.log("Player is " + this.player.name + " who scored " + this.pointValue + " " + this.gamePoints);
   }
 
