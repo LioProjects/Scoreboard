@@ -64,8 +64,12 @@ export class ScoreboardGraphComponent implements OnChanges {
         height: 350,
         type: "line",
         zoom: {
-          enabled: true
+          enabled: true,
         }
+      },
+      title: {
+        text: "1v1",
+        align: "left"
       },
       dataLabels: {
         enabled: false
@@ -80,8 +84,10 @@ export class ScoreboardGraphComponent implements OnChanges {
         }
       },
       xaxis: {
-        categories: Array.from({ length: 1000 + 1 }, (_, index) => index)
-      }
+        categories: Array.from({ length: 1000 }, (_, index) => index),
+        range: 15
+      },
+      //Todo: adjust y axis to the visible graph so that the lowest value of the graph is on the bottom and the highest is on the top
     };
   }
 
@@ -96,10 +102,7 @@ export class ScoreboardGraphComponent implements OnChanges {
         data: this.getPlayerAdditiveScore(this.player2)
       }
     ];
-    this.chartOptions.title = {
-      text: this.gameMode,
-      align: "center"
-    }
+
   }
 
   private getXaxisLabels(): number[]{

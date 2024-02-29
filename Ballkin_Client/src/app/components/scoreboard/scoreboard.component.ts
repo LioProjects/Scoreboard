@@ -30,7 +30,9 @@ export class ScoreboardComponent {
       }
 
     undo() {
-        this.gamePoints.pop();
+        if(this.gamePoints.length > 0){
+            this.gamePoints = this.gamePoints.slice(0, -1);
+        }
     }
     
     resetGame () {
