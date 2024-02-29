@@ -2,7 +2,7 @@
 <div class="viewport">
     <div class="scoreboard">
         <div class="player-scoreboard">
-            <app-player-selector class="player-selector" [(selectedPlayer)]="player1"></app-player-selector>
+            <app-player-selector class="player-selector"  (selectedPlayerChange)="onPlayer1Change($event)"></app-player-selector>
             <div class="player-points">
                 <div class="player-shots-taken">
                     {{getPlayerShotsTaken(player1)}}
@@ -22,7 +22,7 @@
         </div>
         <app-scoreboard-graph class="scoreboard-graph" [player1]="player1" [player2]="player2" [gamePoints]="gamePoints"></app-scoreboard-graph>
         <div class="player-scoreboard">
-            <app-player-selector class="player-selector" [(selectedPlayer)]="player2"></app-player-selector>
+            <app-player-selector class="player-selector"  (selectedPlayerChange)="onPlayer2Change($event)"></app-player-selector>
             <div class="player-points">
                 <div class="player-shots-taken">
                     {{getPlayerShotsTaken(player2)}}

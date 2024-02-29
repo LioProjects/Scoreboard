@@ -15,10 +15,18 @@ import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/score
 })
 export class ScoreboardComponent {
 
-    player1: Player = { id: -1, name: 'Select Player'};
-    player2: Player = { id: -1, name: 'Select Player'};
+    player1: Player = { id: -1, name: 'Player1'};
+    player2: Player = { id: -1, name: 'Player2'};
 
     gamePoints: PlayerGamePoint[] = [];
+
+    onPlayer1Change(player: Player) {
+        this.player1 = player;
+      }
+    
+      onPlayer2Change(player: Player) {
+        this.player2 = player;
+      }
 
     undo() {
         this.gamePoints.pop();

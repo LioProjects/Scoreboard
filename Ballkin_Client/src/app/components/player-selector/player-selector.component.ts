@@ -26,11 +26,16 @@ export class PlayerSelectorComponent{
           return of(players); 
         })
       );
-      setTimeout(() => console.log("current selected player "+ (this.selectedPlayer?.id === -1)), 0);      
+      setTimeout(() => console.log("current selected player "+ (this.selectedPlayer?.id)), 0);      
   }
 
-  onPlayerSelect(player: Player) {
-    this.selectedPlayer = player;
-    this.selectedPlayerChange.emit(player);
+  //needs rework. check id instead of names (if two names are the same we fucked)
+  onPlayerSelect(event: Event) {
+    const selectedPlayerName = (event.target as HTMLSelectElement).value;
+    this.players$.subscribe(players => {
+      const selectedPlayer = players.find(player => player.name === selectedPlayerName);
+      console.log(selectedPlayerName)
+      this.selectedPlayerChange.emit(selectedPlayer);
+    });
   }
 }
