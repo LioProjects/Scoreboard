@@ -20,7 +20,7 @@
                 <app-scoreboard-point-button [pointValue]="4" [player]="player1" [(gamePoints)] = "gamePoints"></app-scoreboard-point-button>
             </div>
         </div>
-        <app-scoreboard-graph class="scoreboard-graph" [player1]="player1" [player2]="player2" [gamePoints]="gamePoints"></app-scoreboard-graph>
+        <app-scoreboard-graph class="scoreboard-graph" [player1]="player1" [player2]="player2" [gamePoints]="gamePoints" [gameMode]="gameMode"></app-scoreboard-graph>
         <div class="player-scoreboard">
             <app-player-selector class="player-selector"  (selectedPlayerChange)="onPlayer2Change($event)"></app-player-selector>
             <div class="player-points">

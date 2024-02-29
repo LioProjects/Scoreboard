@@ -15,8 +15,9 @@ import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/score
 })
 export class ScoreboardComponent {
 
-    player1: Player = { id: -1, name: 'Player1'};
-    player2: Player = { id: -1, name: 'Player2'};
+    player1: Player | undefined;
+    player2: Player | undefined;
+    gameMode: string = "1v1";
 
     gamePoints: PlayerGamePoint[] = [];
 
@@ -40,7 +41,7 @@ export class ScoreboardComponent {
         console.log("save Game to be implemented");
     }
 
-    getAvgPlayerScore(player: Player): number{
+    getAvgPlayerScore(player: Player | undefined): number{
         if (!player){
             return 0;
         }
@@ -51,14 +52,14 @@ export class ScoreboardComponent {
         return Number((this.getPlayerScore(player)/playerShotsTaken).toFixed(2));
     }
 
-    getPlayerScore (player: Player): number{
+    getPlayerScore (player: Player | undefined): number{
         if (!player){
             return 0;
         }
         return this.gamePoints.filter(x => x.player === player).map(x => x.pointValue).reduce((total, currentValue) => total + currentValue, 0);
     }
 
-    getPlayerShotsTaken(player: Player): number{
+    getPlayerShotsTaken(player: Player | undefined): number{
         if (!player){
             return 0;
         }

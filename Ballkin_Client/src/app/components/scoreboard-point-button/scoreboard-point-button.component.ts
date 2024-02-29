@@ -11,15 +11,17 @@ import { Player } from '../../models/player/player.model';
 })
 export class ScoreboardPointButtonComponent {
   @Input() pointValue!: number;
-  @Input() player!: Player;
+  @Input() player!: Player | undefined;
   @Input() gamePoints!: PlayerGamePoint[];
   @Output() gamePointsChange = new EventEmitter<PlayerGamePoint[]>();
 
 
   onPointButtonClick(){
-    this.gamePoints = [...this.gamePoints, new PlayerGamePoint(this.player, this.pointValue)];
-    this.gamePointsChange.emit(this.gamePoints);
-    console.log("Player is " + this.player.name + " who scored " + this.pointValue + " " + this.gamePoints);
+    if (this.player !== undefined){
+      this.gamePoints = [...this.gamePoints, new PlayerGamePoint(this.player, this.pointValue)];
+      this.gamePointsChange.emit(this.gamePoints);
+      console.log("Player is " + this.player.name + " who scored " + this.pointValue + " " + this.gamePoints);
+    }
   }
 
   calculatePointValuePercentage(): number {

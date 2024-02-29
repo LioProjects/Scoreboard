@@ -32,8 +32,9 @@ export type ChartOptions = {
 })
 export class ScoreboardGraphComponent implements OnChanges {
   @Input() gamePoints!: PlayerGamePoint[];
-  @Input() player1!: Player;
-  @Input() player2!: Player;
+  @Input() player1!: Player | undefined;
+  @Input() player2!: Player | undefined;
+  @Input() gameMode!: string;
   @ViewChild("chart") chart?: ChartComponent;
   public chartOptions!: Partial<ChartOptions> | any;
 
@@ -43,7 +44,7 @@ export class ScoreboardGraphComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['gamePoints']) {
-      this.updateSeries();
+      this.updateChart();
     }
   }
 
@@ -63,7 +64,7 @@ export class ScoreboardGraphComponent implements OnChanges {
         height: 350,
         type: "line",
         zoom: {
-          enabled: false
+          enabled: true
         }
       },
       dataLabels: {
@@ -71,10 +72,6 @@ export class ScoreboardGraphComponent implements OnChanges {
       },
       stroke: {
         curve: "straight"
-      },
-      title: {
-        text: "Product Trends by Month",
-        align: "left"
       },
       grid: {
         row: {
@@ -88,8 +85,7 @@ export class ScoreboardGraphComponent implements OnChanges {
     };
   }
 
-  private updateSeries() {
-    console.log("series is being updated")
+  private updateChart() {
     this.chartOptions.series = [
       {
         name: this.player1?.name,
@@ -100,7 +96,10 @@ export class ScoreboardGraphComponent implements OnChanges {
         data: this.getPlayerAdditiveScore(this.player2)
       }
     ];
-    
+    this.chartOptions.title = {
+      text: this.gameMode,
+      align: "center"
+    }
   }
 
   private getXaxisLabels(): number[]{
@@ -112,7 +111,7 @@ export class ScoreboardGraphComponent implements OnChanges {
   
   }
 
-  private getPlayerAdditiveScore(player: Player): number[] {
+  private getPlayerAdditiveScore(player: Player | undefined): number[] {
     if (!player) {
       return [0];
     }

@@ -1,4 +1,4 @@
-<button class="point-button" (click)="onPointButtonClick()">
+<button class="point-button" [disabled]="!player" (click)="onPointButtonClick()">
     <div class="point-value">
         {{pointValue}}
     </div>
