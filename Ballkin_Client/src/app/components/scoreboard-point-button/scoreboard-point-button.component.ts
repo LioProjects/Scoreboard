@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Moneyball } from '../../models/moneyball/moneyball.model';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
 
@@ -13,12 +14,13 @@ export class ScoreboardPointButtonComponent {
   @Input() pointValue!: number;
   @Input() player!: Player | undefined;
   @Input() gamePoints!: PlayerGamePoint[];
+  @Input() moneyballInPlay?: Moneyball;
   @Output() gamePointsChange = new EventEmitter<PlayerGamePoint[]>();
 
 
   onPointButtonClick(){
     if (this.player !== undefined){
-      this.gamePoints = [...this.gamePoints, new PlayerGamePoint(this.player, this.pointValue)];
+      this.gamePoints = [...this.gamePoints, new PlayerGamePoint(this.player, this.pointValue, this.moneyballInPlay)];
       this.gamePointsChange.emit(this.gamePoints);
       console.log("Player is " + this.player.name + " who scored " + this.pointValue + " " + this.gamePoints);
     }

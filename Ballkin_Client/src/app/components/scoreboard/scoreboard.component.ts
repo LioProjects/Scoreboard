@@ -1,7 +1,13 @@
 
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MoneyballNormalComponent } from "../../../assets/icons/moneyball-normal/moneyball-normal.component";
+import { Moneyball } from '../../models/moneyball/moneyball.model';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
+import { GameService } from '../../services/game/game.service';
+import { MoneyballQueueComponent } from "../moneyball-queue/moneyball-queue.component";
 import { PlayerSelectorComponent } from "../player-selector/player-selector.component";
 import { ScoreboardGraphComponent } from "../scoreboard-graph/scoreboard-graph.component";
 import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/scoreboard-point-button.component';
@@ -11,15 +17,20 @@ import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/score
     standalone: true,
     templateUrl: './scoreboard.component.html',
     styleUrl: './scoreboard.component.scss',
-    imports: [ScoreboardPointButtonComponent, PlayerSelectorComponent, ScoreboardGraphComponent]
+    imports: [ScoreboardPointButtonComponent, PlayerSelectorComponent, ScoreboardGraphComponent, MoneyballQueueComponent, MoneyballNormalComponent, FormsModule, CommonModule]
 })
 export class ScoreboardComponent {
+
+    moneyballEnabled: boolean = false;
 
     player1: Player | undefined;
     player2: Player | undefined;
     gameMode: string = "1v1";
 
     gamePoints: PlayerGamePoint[] = [];
+    moneyballQueue: Moneyball[] = this.gameService.getMoneyballQueue();
+
+    constructor(private gameService: GameService) {}
 
     onPlayer1Change(player: Player) {
         this.player1 = player;

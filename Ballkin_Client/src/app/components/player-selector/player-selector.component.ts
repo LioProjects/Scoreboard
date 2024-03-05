@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable, of, switchMap } from 'rxjs';
 import { Player } from '../../models/player/player.model';
-import { PlayerService } from '../../services/player.service';
+import { PlayerService } from '../../services/player/player.service';
 
 @Component({
   selector: 'app-player-selector',
