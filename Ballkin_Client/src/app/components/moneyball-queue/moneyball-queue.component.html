@@ -1,3 +1,3 @@
 <div class="moneyball-queue">
-    <app-moneyball-normal class="image-container"*ngFor="let moneyball of (moneyballQueue)"/>
+    <app-moneyball class="image-container" *ngFor="let moneyball of (moneyballQueue)"  [moneyballId]="moneyball.id"></app-moneyball>
 </div>

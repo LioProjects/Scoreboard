@@ -1,18 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Player } from '../../models/player/player.model';
+import { PLAYERS, Player } from '../../models/player/player.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlayerService {
   
-  private players: Player[] = [
-  { id: 1, name: 'Lionel' },
-  { id: 2, name: 'Noel' },
-  { id: 3, name: 'Nico' },
-  { id: 4, name: 'Johannes' }
-];
+  private players: Player[] = PLAYERS;
 
 constructor() { }
 

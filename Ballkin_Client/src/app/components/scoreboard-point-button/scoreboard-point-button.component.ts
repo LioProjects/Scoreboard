@@ -10,6 +10,8 @@ import { Player } from '../../models/player/player.model';
   templateUrl: './scoreboard-point-button.component.html',
   styleUrl: './scoreboard-point-button.component.scss'
 })
+
+//todo: input of gameservice
 export class ScoreboardPointButtonComponent {
   @Input() pointValue!: number;
   @Input() player!: Player | undefined;
@@ -22,7 +24,7 @@ export class ScoreboardPointButtonComponent {
     if (this.player !== undefined){
       this.gamePoints = [...this.gamePoints, new PlayerGamePoint(this.player, this.pointValue, this.moneyballInPlay)];
       this.gamePointsChange.emit(this.gamePoints);
-      console.log("Player is " + this.player.name + " who scored " + this.pointValue + " " + this.gamePoints);
+      console.log("Player is " + this.player.name + " who scored " + this.pointValue + " with this multiplyer for himself" + this.moneyballInPlay?.multiplierForShooter);
     }
   }
 

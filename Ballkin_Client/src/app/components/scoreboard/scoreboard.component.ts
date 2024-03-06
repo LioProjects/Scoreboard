@@ -2,7 +2,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MoneyballNormalComponent } from "../../../assets/icons/moneyball-normal/moneyball-normal.component";
 import { Moneyball } from '../../models/moneyball/moneyball.model';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
@@ -17,7 +16,7 @@ import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/score
     standalone: true,
     templateUrl: './scoreboard.component.html',
     styleUrl: './scoreboard.component.scss',
-    imports: [ScoreboardPointButtonComponent, PlayerSelectorComponent, ScoreboardGraphComponent, MoneyballQueueComponent, MoneyballNormalComponent, FormsModule, CommonModule]
+    imports: [ScoreboardPointButtonComponent, PlayerSelectorComponent, ScoreboardGraphComponent, MoneyballQueueComponent, FormsModule, CommonModule]
 })
 export class ScoreboardComponent {
 
@@ -69,7 +68,8 @@ export class ScoreboardComponent {
         if (!player){
             return 0;
         }
-        return this.gamePoints.filter(x => x.player === player).map(x => x.pointValue).reduce((total, currentValue) => total + currentValue, 0);
+        //todo handle minus points caused by opponent
+        return this.gamePoints.filter(x => x.player === player).map(x => x.moneyball? x.pointValue * x.moneyball.multiplierForShooter : x.pointValue).reduce((total, currentValue) => total + currentValue, 0);
     }
 
     getPlayerShotsTaken(player: Player | undefined): number{

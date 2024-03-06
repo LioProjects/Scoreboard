@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MoneyballNormalComponent } from './moneyball-normal.component';
+import { MoneyballComponent } from './moneyball.component';
 
-describe('MoneyballNormalComponent', () => {
-  let component: MoneyballNormalComponent;
-  let fixture: ComponentFixture<MoneyballNormalComponent>;
+describe('MoneyballComponent', () => {
+  let component: MoneyballComponent;
+  let fixture: ComponentFixture<MoneyballComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MoneyballNormalComponent]
+      imports: [MoneyballComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(MoneyballNormalComponent);
+    fixture = TestBed.createComponent(MoneyballComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,21 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Moneyball } from '../../models/moneyball/moneyball.model';
+import { MONEYBALLS, Moneyball } from '../../models/moneyball/moneyball.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  //in assetservice along with the playernames
-  private moneyballs: { [id: number]: Moneyball } = {
-    1: {id: 1, multiplierForShooter: 1, multiplierForOpponent: 0},
-    2: {id: 2, multiplierForShooter: 2, multiplierForOpponent: 0},
-    3: {id: 3, multiplierForShooter: 1, multiplierForOpponent: -1},
-  };
-
   private moneyballQueue: Moneyball[] = [
     {id: 1, multiplierForShooter: 1, multiplierForOpponent: 0},
     {id: 2, multiplierForShooter: 2, multiplierForOpponent: 0},
-    {id: 3, multiplierForShooter: 1, multiplierForOpponent: -1},
+    {id: 3, multiplierForShooter: 3, multiplierForOpponent: -1},
   ]
 
   constructor() { }
@@ -24,11 +17,7 @@ export class GameService {
     return this.moneyballQueue;
   }
 
-  getMoneyballById(id: number): Moneyball | undefined {
-    return this.moneyballs[id];
-  }
-
-  getCurrentMoneyball(): Moneyball {
+  getNextMoneyball(): Moneyball {
     if(this.moneyballQueue.length > 0){
       const randomMoneyballId = Math.floor(Math.random() * 3) + 1;
       const randomMoneyball = this.getMoneyballById(randomMoneyballId);
@@ -39,4 +28,9 @@ export class GameService {
     }
     return {id: 1, multiplierForShooter: 1, multiplierForOpponent: 0}
   }
+
+  private getMoneyballById(id: number): Moneyball | undefined {
+    return MONEYBALLS.find(moneyball => moneyball.id === id);
+  }
+
 }

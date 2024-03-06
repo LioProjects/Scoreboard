@@ -10,3 +10,9 @@ export class Moneyball {
         this.multiplierForOpponent = multiplierForOpponent;
     }
 }
+
+export const MONEYBALLS: Moneyball[] = [
+    new Moneyball(1, 1, 0),
+    new Moneyball(2, 2, 0),
+    new Moneyball(3, 3, -1),
+  ];
