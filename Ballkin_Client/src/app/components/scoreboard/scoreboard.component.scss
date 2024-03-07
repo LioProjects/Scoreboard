@@ -1,0 +1,80 @@
+.viewport{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.scoreboard{
+    height: 50%;
+    display: flex;
+    justify-content: space-between;
+
+}
+.player-selector{
+    height: 20%;
+    display: flex;
+    align-items: center;
+}
+.player-scoreboard{
+    height: 100%;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: gray;
+}
+.player-button-container{
+    height: 35%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.player-points{
+    position: relative;
+    height: 35%;
+    width: 60%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 15vh;
+    background-color: darkgray;
+}
+
+.scoreboard-graph{
+    width: 35%;
+}
+
+.player-shots-taken{
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    font-size: 2vh;
+}
+
+.avg-point-value{
+    position: absolute;
+    left: 1%;
+    bottom: 1%;
+    font-size: 2vh;
+}
+
+.moneyball-queue-container{
+    margin-top: 5%;
+    right: 50%;
+    height: 30%;
+    width: 50%;
+    background-color: grey;
+}
+
+.control-buttons{
+    height: 20%;
+    width: 15%;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    bottom: 1%;
+    right: 1%;
+}
