@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Moneyball } from '../../models/moneyball/moneyball.model';
-import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Player } from '../../models/player/player.model';
+import { GameService } from '../../services/game/game.service';
 
 @Component({
   selector: 'app-scoreboard-point-button',
@@ -12,35 +12,49 @@ import { Player } from '../../models/player/player.model';
 })
 
 //todo: input of gameservice
-export class ScoreboardPointButtonComponent {
+export class ScoreboardPointButtonComponent implements OnInit, OnChanges, OnDestroy {
   @Input() pointValue!: number;
   @Input() player!: Player | undefined;
-  @Input() gamePoints!: PlayerGamePoint[];
-  @Input() moneyballInPlay?: Moneyball;
-  @Output() gamePointsChange = new EventEmitter<PlayerGamePoint[]>();
 
+  pointValuePercentage: number = 0;
+  private percentageSubscription: Subscription = new Subscription();
 
-  onPointButtonClick(){
-    if (this.player !== undefined){
-      this.gamePoints = [...this.gamePoints, new PlayerGamePoint(this.player, this.pointValue, this.moneyballInPlay)];
-      this.gamePointsChange.emit(this.gamePoints);
-      console.log("Player is " + this.player.name + " who scored " + this.pointValue + " with this multiplyer for himself" + this.moneyballInPlay?.multiplierForShooter);
+  constructor(private gameService: GameService) {}
+
+  ngOnInit() {
+    if (this.player) {
+      this.subscribeToPointValuePercentage();
     }
   }
 
-  calculatePointValuePercentage(): number {
-    const shotCount = this.gamePoints
-    .filter(x => x.player === this.player).length;
-    
-    if (shotCount === 0){
-      return 0;
+  ngOnChanges() {
+    if (this.player) {
+      this.subscribeToPointValuePercentage();
+    } else {
+      this.unsubscribeFromPointValuePercentage();
     }
-    const pointValueHitPercentage = this.gamePoints
-        .filter(x => x.player === this.player)
-        .map(x => x.pointValue)
-        .filter(x => x === this.pointValue)
-        .length/shotCount
+  }
 
-    return Number((pointValueHitPercentage * 100).toFixed(0));
+  ngOnDestroy() {
+    this.unsubscribeFromPointValuePercentage();
+  }
+
+  //todo: this doesnt need to be. either input gamepoints$
+  subscribeToPointValuePercentage() {
+    this.percentageSubscription = this.gameService
+      .calculatePointValuePercentage(this.player!, this.pointValue)
+      .subscribe(percentage => {
+        this.pointValuePercentage = percentage;
+      });
+  }
+
+  unsubscribeFromPointValuePercentage() {
+    this.percentageSubscription.unsubscribe();
+  }
+
+  onPointButtonClick() {
+    if (this.player) {
+      this.gameService.recordPlayerScore(this.player, this.pointValue);
+    }
   }
 }

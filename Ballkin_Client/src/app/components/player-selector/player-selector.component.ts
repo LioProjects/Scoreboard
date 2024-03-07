@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Player } from '../../models/player/player.model';
 import { PlayerService } from '../../services/player/player.service';
 
@@ -20,13 +20,7 @@ export class PlayerSelectorComponent{
   players$: Observable<Player[]>;
 
   constructor(private playerService: PlayerService) {
-    this.players$ = this.playerService.getPlayers()
-      .pipe(
-        switchMap(players => {
-          return of(players); 
-        })
-      );
-      setTimeout(() => console.log("current selected player "+ (this.selectedPlayer?.id)), 0);      
+    this.players$ = this.playerService.getPlayers();
   }
 
   //needs rework. check id instead of names (if two names are the same we fucked)
