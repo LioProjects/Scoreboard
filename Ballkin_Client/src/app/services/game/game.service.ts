@@ -61,8 +61,6 @@ export class GameService {
     this.gamePointsSubject.next([]);
   }
 
-
-
   //doesnt need to be in the service
   calculatePointValuePercentage(player: Player, pointValue: number) {
     return this.gamePoints$.pipe(

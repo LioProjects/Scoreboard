@@ -121,7 +121,7 @@ export class ScoreboardGraphComponent implements OnChanges {
     let sum = 0;
     const playerPoints = this.gamePoints
       .filter(x => x.player === player)
-      .map(x => x.pointValue)
+      .map(x => x.pointValue * (x.moneyball?.multiplierForShooter ?? 1))
       .map(x => {
         sum = sum + x;
         return sum;
