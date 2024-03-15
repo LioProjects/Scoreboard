@@ -105,15 +105,6 @@ export class ScoreboardGraphComponent implements OnChanges {
 
   }
 
-  private getXaxisLabels(): number[]{
-    const shotsCountPlayer1 = this.gamePoints.filter(x => x.player === this.player1).length;
-    const shotsCountPlayer2 = this.gamePoints.filter(x => x.player === this.player2).length;
-    const maxLength = Math.max(shotsCountPlayer1, shotsCountPlayer2);
-    const xAxisArray = Array.from({ length: maxLength + 1 }, (_, index) => index);
-    return xAxisArray;
-  
-  }
-
   private getPlayerAdditiveScore(player: Player | undefined): number[] {
     if (!player) {
       return [0];

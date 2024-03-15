@@ -100,7 +100,11 @@ export class ScoreboardComponent {
       if (!player) {
         return 0;
       }
-      return this.gamePoints.filter(x => x.player === player).map(x => x.moneyball ? x.pointValue * x.moneyball.multiplierForShooter : x.pointValue).reduce((total, currentValue) => total + currentValue, 0);
+      let score = 0;
+      this.gameService.getPlayerScore(player).subscribe(result => {
+        score = result;
+      });
+      return score;
     }
   
     getPlayerShotsTaken(player: Player | undefined): number {

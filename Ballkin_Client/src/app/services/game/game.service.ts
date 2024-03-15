@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { Gamemode } from '../../enums/gamemode/gamemode';
 import { MONEYBALLS, Moneyball } from '../../models/moneyball/moneyball.model';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
@@ -40,15 +40,45 @@ export class GameService {
 
   constructor() { }
 
-  //bind gamepoints to components
-  //list of observers,
-  //notify them
-
   recordPlayerScore(player: Player, pointValue: number) {
     const moneyballInPlay = this.moneyballEnabled ? this.getNextMoneyball() : undefined;
     const newGamePoint = new PlayerGamePoint(player, pointValue, moneyballInPlay);
     this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
-    console.log(this.gamePointsSubject.value);
+    console.log(this.gamePointsSubject.getValue())
+
+  }
+
+
+  //todo: circular dependancy problem with this observable. check callers
+  getPlayerScore(player: Player): Observable<number>{
+    let opponent: Player | undefined;
+    if (player === this.playerOneSubject.getValue()){
+      opponent = this.playerTwoSubject.getValue();
+    }
+    else{
+      opponent = this.playerOneSubject.getValue();
+    }
+    return this.gamePoints$.pipe(
+      map(gamePoints => {
+
+        const shooterPoints = gamePoints
+          .filter(x => x.player === player)
+          .map(x => (x.moneyball ? x.pointValue * x.moneyball.multiplierForShooter : x.pointValue) * (x.multiplier ?? 1))
+          .reduce((total, currentValue) => total + currentValue, 0);
+  
+        const opponentMinusPoints = gamePoints
+          .filter(x => x.player === opponent)
+          .map(x => (x.moneyball ? x.pointValue * x.moneyball.multiplierForOpponent : x.pointValue) * (x.multiplier ?? 1))
+          .reduce((total, currentValue) => total + currentValue, 0);
+        console.log("shooterpoints: " , shooterPoints, " opponentmalus ", opponentMinusPoints, " caller ", player)
+        return shooterPoints - opponentMinusPoints;
+      })
+    );
+  
+  }
+
+  addGamePoint(gamePoints: PlayerGamePoint){
+    this.gamePointsSubject.next([...this.gamePointsSubject.getValue(), gamePoints])
   }
 
   undo(){
