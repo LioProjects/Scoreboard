@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
-import { Gamemode } from '../../enums/gamemode/gamemode';
+import { BehaviorSubject, Observable, map, switchMap } from 'rxjs';
+import { OneVsOneGameModeState } from '../../game-modes/one-vs-one-game-mode/one-vs-one-game-mode-state';
+import { GameModeState } from '../../interfaces/game-mode-state/game-mode-state';
 import { MONEYBALLS, Moneyball } from '../../models/moneyball/moneyball.model';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
@@ -18,7 +19,7 @@ export class GameService {
   private playerTwoSubject = new BehaviorSubject<Player | undefined>(undefined);
   playerTwo$ = this.playerTwoSubject.asObservable();
 
-  private gameModeSubject = new BehaviorSubject<Gamemode>(Gamemode.ONEVSONE);
+  private gameModeSubject = new BehaviorSubject<GameModeState>(new OneVsOneGameModeState(this));
   gameMode$ = this.gameModeSubject.asObservable();
 
   setPlayerOne(player: Player){
@@ -63,18 +64,49 @@ export class GameService {
 
         const shooterPoints = gamePoints
           .filter(x => x.player === player)
-          .map(x => (x.moneyball ? x.pointValue * x.moneyball.multiplierForShooter : x.pointValue) * (x.multiplier ?? 1))
+          .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForShooter) : x.pointValue) * (x.multiplier ?? 1))
           .reduce((total, currentValue) => total + currentValue, 0);
   
         const opponentMinusPoints = gamePoints
           .filter(x => x.player === opponent)
-          .map(x => (x.moneyball ? x.pointValue * x.moneyball.multiplierForOpponent : x.pointValue) * (x.multiplier ?? 1))
+          .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForOpponent) : 0) * (x.multiplier ?? 1))
           .reduce((total, currentValue) => total + currentValue, 0);
         console.log("shooterpoints: " , shooterPoints, " opponentmalus ", opponentMinusPoints, " caller ", player)
-        return shooterPoints - opponentMinusPoints;
+        return shooterPoints + opponentMinusPoints;
       })
     );
   
+  }
+
+  //avg without counting Opponent Malus
+  getPlayerAvgScore(player: Player): Observable<number>{
+    return this.getPlayerShotsTaken(player).pipe(
+      switchMap(shotsTaken => {
+        return this.gamePoints$.pipe(
+          map(gamePoints => {
+            
+            if (shotsTaken === 0){
+              return 0;
+            }
+            const shooterPoints = gamePoints
+              .filter(x => x.player === player)
+              .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForShooter) : x.pointValue) * (x.multiplier ?? 1))
+              .reduce((total, currentValue) => total + currentValue, 0);
+
+            return Number((shooterPoints/shotsTaken).toFixed(2));
+          })
+        )
+      })
+    )
+  }
+
+  getPlayerShotsTaken(player: Player): Observable<number>{
+    return this.gamePoints$.pipe(
+      map(gamePoints => {
+        console.log(gamePoints.filter(x => x.player === player).length)
+        return gamePoints.filter(x => x.player === player).length;
+      })
+    )
   }
 
   addGamePoint(gamePoints: PlayerGamePoint){

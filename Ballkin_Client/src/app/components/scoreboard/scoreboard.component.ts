@@ -2,9 +2,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
 import { Moneyball } from '../../models/moneyball/moneyball.model';
-import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
 import { GameService } from '../../services/game/game.service';
 import { MoneyballQueueComponent } from "../moneyball-queue/moneyball-queue.component";
@@ -25,26 +24,18 @@ export class ScoreboardComponent {
     player1: Player | undefined;
     player2: Player | undefined;
     gameMode: string = "1v1";
-    gamePoints: PlayerGamePoint[] = [];
     moneyballQueue: Moneyball[] = [];
   
-    gamePointsSubscription: Subscription = new Subscription();
+    //gamePointsSubscription: Subscription = new Subscription();
     playerOneSubscription: Subscription = new Subscription();
     playerTwoSubscription: Subscription = new Subscription();
   
     constructor(private gameService: GameService) {}
   
     ngOnInit() {
-      this.subscribeToGamePoints();
       this.subscribeToPlayerOne();
       this.subscribeToPlayerTwo();
       this.moneyballQueue = this.gameService.getMoneyballQueue();
-    }
-  
-    subscribeToGamePoints() {
-      this.gamePointsSubscription = this.gameService.gamePoints$.subscribe(gamePoints => {
-        this.gamePoints = gamePoints;
-      });
     }
 
     subscribeToPlayerOne(){
@@ -60,7 +51,6 @@ export class ScoreboardComponent {
     }
   
     ngOnDestroy() {
-      this.gamePointsSubscription.unsubscribe();
       this.playerOneSubscription.unsubscribe();
       this.playerTwoSubscription.unsubscribe();
     }
@@ -84,34 +74,26 @@ export class ScoreboardComponent {
     saveGame() {
       console.log("save Game to be implemented");
     }
-  
-    getAvgPlayerScore(player: Player | undefined): number {
+
+    getAvgPlayerScore(player: Player | undefined): Observable<number> {
       if (!player) {
-        return 0;
+        return of(0);
       }
-      const playerShotsTaken = this.getPlayerShotsTaken(player);
-      if (playerShotsTaken === 0) {
-        return 0;
-      }
-      return Number((this.getPlayerScore(player) / playerShotsTaken).toFixed(2));
+      return this.gameService.getPlayerAvgScore(player);
     }
   
-    getPlayerScore(player: Player | undefined): number {
+    getPlayerScore(player: Player | undefined): Observable<number> {
       if (!player) {
-        return 0;
+        return of(0);
       }
-      let score = 0;
-      this.gameService.getPlayerScore(player).subscribe(result => {
-        score = result;
-      });
-      return score;
+      return this.gameService.getPlayerScore(player);
     }
   
-    getPlayerShotsTaken(player: Player | undefined): number {
+    getPlayerShotsTaken(player: Player | undefined): Observable<number> {
       if (!player) {
-        return 0;
+        return of(0);
       }
-      return this.gamePoints.filter(x => x.player === player).length
+      return this.gameService.getPlayerShotsTaken(player);
     }
 
     toggelMoneyball(){

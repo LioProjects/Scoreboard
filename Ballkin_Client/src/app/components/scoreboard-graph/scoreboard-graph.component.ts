@@ -10,8 +10,8 @@ import {
   ChartComponent,
   NgApexchartsModule
 } from 'ng-apexcharts';
-import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
+import { GameService } from '../../services/game/game.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -31,14 +31,13 @@ export type ChartOptions = {
   styleUrl: './scoreboard-graph.component.scss'
 })
 export class ScoreboardGraphComponent implements OnChanges {
-  @Input() gamePoints!: PlayerGamePoint[];
   @Input() player1!: Player | undefined;
   @Input() player2!: Player | undefined;
   @Input() gameMode!: string;
   @ViewChild("chart") chart?: ChartComponent;
   public chartOptions!: Partial<ChartOptions> | any;
 
-  constructor() {
+  constructor(private gameService: GameService) {
     this.initializeChartOptions();
   }
 
@@ -106,18 +105,19 @@ export class ScoreboardGraphComponent implements OnChanges {
   }
 
   private getPlayerAdditiveScore(player: Player | undefined): number[] {
-    if (!player) {
-      return [0];
-    }
-    let sum = 0;
-    const playerPoints = this.gamePoints
-      .filter(x => x.player === player)
-      .map(x => x.pointValue * (x.moneyball?.multiplierForShooter ?? 1))
-      .map(x => {
-        sum = sum + x;
-        return sum;
-      });
-  
-    return [0, ...playerPoints];
+    //if (!player) {
+    //  return [0];
+    //}
+    //let sum = 0;
+    //const playerPoints = this.gamePoints
+    //  .filter(x => x.player === player)
+    //  .map(x => x.pointValue * (x.moneyball?.multiplierForShooter ?? 1))
+    //  .map(x => {
+    //    sum = sum + x;
+    //    return sum;
+    //  });
+  //
+    //return [0, ...playerPoints];
+    return [0]
   }
 }
