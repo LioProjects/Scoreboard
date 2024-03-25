@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, switchMap } from 'rxjs';
+import { BehaviorSubject, map, merge, tap } from 'rxjs';
 import { OneVsOneGameModeState } from '../../game-modes/one-vs-one-game-mode/one-vs-one-game-mode-state';
 import { GameModeState } from '../../interfaces/game-mode-state/game-mode-state';
 import { MONEYBALLS, Moneyball } from '../../models/moneyball/moneyball.model';
@@ -13,12 +13,7 @@ export class GameService {
   private gamePointsSubject = new BehaviorSubject<PlayerGamePoint[]>([]);
   gamePoints$ = this.gamePointsSubject.asObservable();
 
-  //playerOneGamePoints
-  //playerTwoGamePoints
-  //playerOneAvgGamePoints
-  //playerTwoAvgGamePoints
-  //playerOneShotsTaken
-  //playerTwoShotsTaken
+  //Player Observables
   private playerOneSubject = new BehaviorSubject<Player | undefined>(undefined);
   playerOne$ = this.playerOneSubject.asObservable();
 
@@ -27,6 +22,26 @@ export class GameService {
 
   private gameModeSubject = new BehaviorSubject<GameModeState>(new OneVsOneGameModeState(this));
   gameMode$ = this.gameModeSubject.asObservable();
+
+  //Statistic Observables
+  private playerOneGamePointsSubject = new BehaviorSubject<number>(0);
+  playerOneGamePoints$ = this.playerOneGamePointsSubject.asObservable();
+
+  private playerTwoGamePointsSubject = new BehaviorSubject<number>(0);
+  playerTwoGamePoints$ = this.playerTwoGamePointsSubject.asObservable();
+
+  private playerOneAvgGamePointsSubject = new BehaviorSubject<number>(0);
+  playerOneAvgGamePoints$ = this.playerOneAvgGamePointsSubject.asObservable();
+
+  private playerTwoAvgGamePointsSubject = new BehaviorSubject<number>(0);
+  playerTwoAvgGamePoints$ = this.playerTwoAvgGamePointsSubject.asObservable();
+
+  private playerOneShotsTakenSubject = new BehaviorSubject<number>(0);
+  playerOneShotsTaken$ = this.playerOneShotsTakenSubject.asObservable();
+
+  private playerTwoShotsTakenSubject = new BehaviorSubject<number>(0);
+  playerTwoShotsTaken$ = this.playerTwoShotsTakenSubject.asObservable();
+
 
   setPlayerOne(player: Player){
     this.playerOneSubject.next(player);
@@ -45,19 +60,93 @@ export class GameService {
   //todo: link this to the button in scoreboard
   private moneyballEnabled: boolean = false;
 
-  constructor() { }
+  constructor() { 
+    this.calculateStatistics()
+  }
 
 
   addGamePoint(newGamePoint: PlayerGamePoint) {
     this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
-}
+  }
 
   recordPlayerScore(player: Player, pointValue: number) {
-    const moneyballInPlay = this.moneyballEnabled ? this.getNextMoneyball() : undefined;
-    const newGamePoint = new PlayerGamePoint(player, pointValue, moneyballInPlay);
-    this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
-    console.log(this.gamePointsSubject.value);
+  const moneyballInPlay = this.moneyballEnabled ? this.getNextMoneyball() : undefined;
+  const newGamePoint = new PlayerGamePoint(player, pointValue, moneyballInPlay);
+  this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
+  console.log(this.gamePointsSubject.value);
   }
+
+  calculateStatistics(){
+    merge(this.gamePoints$, this.playerOne$, this.playerTwo$).pipe(
+      tap(() => {
+        const gamePoints = this.gamePointsSubject.getValue();
+        this.calculatePlayersScore(gamePoints);
+        console.log("Player1 Points: ", this.playerOneGamePointsSubject.getValue(), "Player2 Points: ", this.playerTwoGamePointsSubject.getValue())
+        this.calculatePlayersShotsTaken(gamePoints);
+        this.calculatePlayersAvgScore(gamePoints);
+        console.log("calculated Statistics")
+      })
+    ).subscribe();
+    console.log("lol")
+  }
+
+  calculatePlayersScore(gamePoints: PlayerGamePoint[]){
+    const playerOnePoints = gamePoints
+          .filter(x => x.player === this.playerOneSubject.getValue())
+          .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForShooter) : x.pointValue) * (x.multiplier ?? 1))
+          .reduce((total, currentValue) => total + currentValue, 0);
+  
+        const playerTwoMalusPoints = gamePoints
+          .filter(x => x.player === this.playerTwoSubject.getValue())
+          .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForOpponent) : 0) * (x.multiplier ?? 1))
+          .reduce((total, currentValue) => total + currentValue, 0);
+          
+        this.playerOneGamePointsSubject.next(playerOnePoints + playerTwoMalusPoints)
+
+        const playerTwoPoints = gamePoints
+          .filter(x => x.player === this.playerTwoSubject.getValue())
+          .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForShooter) : x.pointValue) * (x.multiplier ?? 1))
+          .reduce((total, currentValue) => total + currentValue, 0);
+  
+        const playerOneMalusPoints = gamePoints
+          .filter(x => x.player === this.playerOneSubject.getValue())
+          .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForOpponent) : 0) * (x.multiplier ?? 1))
+          .reduce((total, currentValue) => total + currentValue, 0);
+
+        this.playerTwoGamePointsSubject.next(playerTwoPoints + playerOneMalusPoints)
+  }
+
+  calculatePlayersShotsTaken(gamePoints: PlayerGamePoint[]){
+    const playerOneShotsTaken =  gamePoints.filter(gamePoints => gamePoints.player === this.playerOneSubject.getValue()).length
+    this.playerOneShotsTakenSubject.next(playerOneShotsTaken)
+    const playerTwoShotsTaken =  gamePoints.filter(gamePoints => gamePoints.player === this.playerTwoSubject.getValue()).length
+    this.playerTwoShotsTakenSubject.next(playerTwoShotsTaken)
+  }
+
+  calculatePlayersAvgScore(gamePoints: PlayerGamePoint[]){
+    if (this.playerOneShotsTakenSubject.getValue() === 0){
+      this.playerOneAvgGamePointsSubject.next(0)
+    }
+    else{
+      const playerOneNettoScore = gamePoints.filter(x => x.player === this.playerOneSubject.getValue())
+        .map(x => x.pointValue)
+        .reduce((total, currentValue) => total + currentValue, 0);
+      
+      this.playerOneAvgGamePointsSubject.next(Number((playerOneNettoScore/this.playerOneShotsTakenSubject.getValue()).toFixed(2)))
+    }
+
+    if (this.playerTwoShotsTakenSubject.getValue() === 0){
+      this.playerTwoAvgGamePointsSubject.next(0)
+    }
+    else{
+      const playerTwoNettoScore = gamePoints.filter(x => x.player === this.playerTwoSubject.getValue())
+        .map(x => x.pointValue)
+        .reduce((total, currentValue) => total + currentValue, 0);
+      
+      this.playerTwoAvgGamePointsSubject.next(Number((playerTwoNettoScore/this.playerTwoShotsTakenSubject.getValue()).toFixed(2)))
+    }
+  }
+
 
   undo(){
     if (this.gamePointsSubject.value.length > 0){
@@ -69,62 +158,6 @@ export class GameService {
     this.gamePointsSubject.next([]);
   }
 
-  getPlayerScore(player: Player): Observable<number>{
-    let opponent: Player | undefined;
-    if (player === this.playerOneSubject.getValue()){
-      opponent = this.playerTwoSubject.getValue();
-    }
-    else{
-      opponent = this.playerOneSubject.getValue();
-    }
-    return this.gamePoints$.pipe(
-      map(gamePoints => {
-
-        const shooterPoints = gamePoints
-          .filter(x => x.player === player)
-          .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForShooter) : x.pointValue) * (x.multiplier ?? 1))
-          .reduce((total, currentValue) => total + currentValue, 0);
-  
-        const opponentMinusPoints = gamePoints
-          .filter(x => x.player === opponent)
-          .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForOpponent) : 0) * (x.multiplier ?? 1))
-          .reduce((total, currentValue) => total + currentValue, 0);
-        console.log("shooterpoints: " , shooterPoints, " opponentmalus ", opponentMinusPoints, " caller ", player)
-        return shooterPoints + opponentMinusPoints;
-      })
-    );
-  
-  }
-
-  //avg without counting Opponent Malus
-  getPlayerAvgScore(player: Player): Observable<number>{
-    return this.getPlayerShotsTaken(player).pipe(
-      switchMap(shotsTaken => {
-        return this.gamePoints$.pipe(
-          map(gamePoints => {
-            
-            if (shotsTaken === 0){
-              return 0;
-            }
-            const shooterPoints = gamePoints
-              .filter(x => x.player === player)
-              .map(x => x.pointValue)
-              .reduce((total, currentValue) => total + currentValue, 0);
-
-            return Number((shooterPoints/shotsTaken).toFixed(2));
-          })
-        )
-      })
-    )
-  }
-
-  getPlayerShotsTaken(player: Player): Observable<number>{
-    return this.gamePoints$.pipe(
-      map(gamePoints => {
-        return gamePoints.filter(gamePoints => gamePoints.player === player).length
-      })
-    )
-  }
    
   //doesnt need to be in the service
   calculatePointValuePercentage(player: Player, pointValue: number) {
