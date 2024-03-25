@@ -13,6 +13,12 @@ export class GameService {
   private gamePointsSubject = new BehaviorSubject<PlayerGamePoint[]>([]);
   gamePoints$ = this.gamePointsSubject.asObservable();
 
+  //playerOneGamePoints
+  //playerTwoGamePoints
+  //playerOneAvgGamePoints
+  //playerTwoAvgGamePoints
+  //playerOneShotsTaken
+  //playerTwoShotsTaken
   private playerOneSubject = new BehaviorSubject<Player | undefined>(undefined);
   playerOne$ = this.playerOneSubject.asObservable();
 
@@ -41,16 +47,28 @@ export class GameService {
 
   constructor() { }
 
+
+  addGamePoint(newGamePoint: PlayerGamePoint) {
+    this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
+}
+
   recordPlayerScore(player: Player, pointValue: number) {
     const moneyballInPlay = this.moneyballEnabled ? this.getNextMoneyball() : undefined;
     const newGamePoint = new PlayerGamePoint(player, pointValue, moneyballInPlay);
     this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
-    console.log(this.gamePointsSubject.getValue())
-
+    console.log(this.gamePointsSubject.value);
   }
 
+  undo(){
+    if (this.gamePointsSubject.value.length > 0){
+      this.gamePointsSubject.next([...this.gamePointsSubject.value.slice(0, -1)])
+    }
+  }
 
-  //todo: circular dependancy problem with this observable. check callers
+  resetGame(){
+    this.gamePointsSubject.next([]);
+  }
+
   getPlayerScore(player: Player): Observable<number>{
     let opponent: Player | undefined;
     if (player === this.playerOneSubject.getValue()){
@@ -90,7 +108,7 @@ export class GameService {
             }
             const shooterPoints = gamePoints
               .filter(x => x.player === player)
-              .map(x => (x.moneyball ? (x.pointValue * x.moneyball.multiplierForShooter) : x.pointValue) * (x.multiplier ?? 1))
+              .map(x => x.pointValue)
               .reduce((total, currentValue) => total + currentValue, 0);
 
             return Number((shooterPoints/shotsTaken).toFixed(2));
@@ -103,26 +121,11 @@ export class GameService {
   getPlayerShotsTaken(player: Player): Observable<number>{
     return this.gamePoints$.pipe(
       map(gamePoints => {
-        console.log(gamePoints.filter(x => x.player === player).length)
-        return gamePoints.filter(x => x.player === player).length;
+        return gamePoints.filter(gamePoints => gamePoints.player === player).length
       })
     )
   }
-
-  addGamePoint(gamePoints: PlayerGamePoint){
-    this.gamePointsSubject.next([...this.gamePointsSubject.getValue(), gamePoints])
-  }
-
-  undo(){
-    if (this.gamePointsSubject.value.length > 0){
-      this.gamePointsSubject.next([...this.gamePointsSubject.value.slice(0, -1)])
-    }
-  }
-
-  resetGame(){
-    this.gamePointsSubject.next([]);
-  }
-
+   
   //doesnt need to be in the service
   calculatePointValuePercentage(player: Player, pointValue: number) {
     return this.gamePoints$.pipe(

@@ -5,7 +5,7 @@
             <app-player-selector class="player-selector"  (selectedPlayerChange)="onPlayer1Change($event)"></app-player-selector>
             <div class="player-points">
                 <div class="player-shots-taken">
-                    {{getPlayerShotsTaken(player1)}}
+                    {{getPlayerShotsTaken(player1) | async}}
                 </div>
                 {{getPlayerScore(player1) | async}}
                 <div class="avg-point-value">
@@ -25,7 +25,7 @@
             <app-player-selector class="player-selector"  (selectedPlayerChange)="onPlayer2Change($event)"></app-player-selector>
             <div class="player-points">
                 <div class="player-shots-taken">
-                    {{getPlayerShotsTaken(player2)}}
+                    {{getPlayerShotsTaken(player2) | async}}
                 </div>
                 {{getPlayerScore(player2) | async}}
                 <div class="avg-point-value">
