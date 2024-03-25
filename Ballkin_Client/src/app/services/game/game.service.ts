@@ -33,6 +33,9 @@ export class GameService {
   private playerOneAvgGamePointsSubject = new BehaviorSubject<number>(0);
   playerOneAvgGamePoints$ = this.playerOneAvgGamePointsSubject.asObservable();
 
+  private playerOneAdditiveGamePointsSubject = new BehaviorSubject<number[]>([]);
+  playerOneAdditiveGamePoints$ = this.playerOneAdditiveGamePointsSubject.asObservable();
+
   private playerTwoAvgGamePointsSubject = new BehaviorSubject<number>(0);
   playerTwoAvgGamePoints$ = this.playerTwoAvgGamePointsSubject.asObservable();
 
@@ -41,6 +44,9 @@ export class GameService {
 
   private playerTwoShotsTakenSubject = new BehaviorSubject<number>(0);
   playerTwoShotsTaken$ = this.playerTwoShotsTakenSubject.asObservable();
+
+  private playerTwoAdditiveGamePointsSubject = new BehaviorSubject<number[]>([]);
+  playerTwoAdditiveGamePoints$ = this.playerTwoAdditiveGamePointsSubject.asObservable();
 
 
   setPlayerOne(player: Player){
@@ -81,13 +87,11 @@ export class GameService {
       tap(() => {
         const gamePoints = this.gamePointsSubject.getValue();
         this.calculatePlayersScore(gamePoints);
-        console.log("Player1 Points: ", this.playerOneGamePointsSubject.getValue(), "Player2 Points: ", this.playerTwoGamePointsSubject.getValue())
         this.calculatePlayersShotsTaken(gamePoints);
         this.calculatePlayersAvgScore(gamePoints);
-        console.log("calculated Statistics")
+        this.calculateAdditiveGamePoints(gamePoints);
       })
     ).subscribe();
-    console.log("lol")
   }
 
   calculatePlayersScore(gamePoints: PlayerGamePoint[]){
@@ -114,6 +118,34 @@ export class GameService {
           .reduce((total, currentValue) => total + currentValue, 0);
 
         this.playerTwoGamePointsSubject.next(playerTwoPoints + playerOneMalusPoints)
+
+  }
+
+  calculateAdditiveGamePoints(gamePoints: PlayerGamePoint[]){
+    let playerOneSum = 0;
+    const playerOneAdditiveScore = gamePoints.map(x => {
+      if (x.player === this.playerOneSubject.getValue()){
+        return playerOneSum = (x.moneyball ? (x.pointValue * x.moneyball.multiplierForShooter) : x.pointValue) * (x.multiplier ?? 1) + playerOneSum;
+      }
+      else {
+        //here i dont want to map. i want to ommit this value and just adjust playerOneSum
+        playerOneSum = (x.moneyball ? (x.pointValue * x.moneyball.multiplierForOpponent) : 0) * (x.multiplier ?? 1) + playerOneSum;
+        return undefined;
+      }
+    })
+    this.playerOneAdditiveGamePointsSubject.next([0, ...(playerOneAdditiveScore.filter(x => x !== undefined) as number[])]);
+
+    let playerTwoSum = 0;
+    const playerTwoAdditiveScore = gamePoints.map(x => {
+      if (x.player === this.playerTwoSubject.getValue()){
+        return playerTwoSum = (x.moneyball ? (x.pointValue * x.moneyball.multiplierForShooter) : x.pointValue) * (x.multiplier ?? 1) + playerTwoSum;
+      }
+      else {
+        playerTwoSum = (x.moneyball ? (x.pointValue * x.moneyball.multiplierForOpponent) : 0) * (x.multiplier ?? 1) + playerTwoSum;
+        return undefined;
+      }
+    })
+    this.playerTwoAdditiveGamePointsSubject.next([0, ...(playerTwoAdditiveScore.filter(x => x !== undefined) as number[])]);
   }
 
   calculatePlayersShotsTaken(gamePoints: PlayerGamePoint[]){
@@ -147,7 +179,6 @@ export class GameService {
     }
   }
 
-
   undo(){
     if (this.gamePointsSubject.value.length > 0){
       this.gamePointsSubject.next([...this.gamePointsSubject.value.slice(0, -1)])
@@ -158,7 +189,6 @@ export class GameService {
     this.gamePointsSubject.next([]);
   }
 
-   
   //doesnt need to be in the service
   calculatePointValuePercentage(player: Player, pointValue: number) {
     return this.gamePoints$.pipe(
@@ -204,5 +234,4 @@ export class GameService {
   private getMoneyballById(id: number): Moneyball | undefined {
     return MONEYBALLS.find(moneyball => moneyball.id === id);
   }
-
 }

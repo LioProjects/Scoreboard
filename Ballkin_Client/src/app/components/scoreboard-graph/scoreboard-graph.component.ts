@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -10,6 +10,7 @@ import {
   ChartComponent,
   NgApexchartsModule
 } from 'ng-apexcharts';
+import { Subscription } from 'rxjs';
 import { Player } from '../../models/player/player.model';
 import { GameService } from '../../services/game/game.service';
 
@@ -30,21 +31,39 @@ export type ChartOptions = {
   templateUrl: './scoreboard-graph.component.html',
   styleUrl: './scoreboard-graph.component.scss'
 })
-export class ScoreboardGraphComponent implements OnChanges {
+export class ScoreboardGraphComponent implements OnInit, OnDestroy{
   @Input() player1!: Player | undefined;
   @Input() player2!: Player | undefined;
   @Input() gameMode!: string;
   @ViewChild("chart") chart?: ChartComponent;
+
+  private playerOneAdditiveScore: number[] = [0];
+  private playerTwoAdditiveScore: number[] = [0];
+
+
+  private playerOneAdditiveScoreSubscription = new Subscription();
+  private playerTwoAdditiveScoreSubscription = new Subscription();
+
   public chartOptions!: Partial<ChartOptions> | any;
 
   constructor(private gameService: GameService) {
     this.initializeChartOptions();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['gamePoints']) {
-      this.updateChart();
-    }
+  ngOnInit(): void {
+    this.playerOneAdditiveScoreSubscription = this.gameService.playerOneAdditiveGamePoints$.subscribe(additiveGamePoints =>{
+      this.playerOneAdditiveScore = additiveGamePoints
+      this.updateChart()
+    })
+    this.playerTwoAdditiveScoreSubscription = this.gameService.playerTwoAdditiveGamePoints$.subscribe(additiveGamePoints =>{
+      this.playerTwoAdditiveScore = additiveGamePoints
+      this.updateChart()
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.playerOneAdditiveScoreSubscription.unsubscribe();
+    this.playerTwoAdditiveScoreSubscription.unsubscribe();
   }
 
   private initializeChartOptions() {
@@ -84,40 +103,23 @@ export class ScoreboardGraphComponent implements OnChanges {
       },
       xaxis: {
         categories: Array.from({ length: 1000 }, (_, index) => index),
-        range: 15
       },
       //Todo: adjust y axis to the visible graph so that the lowest value of the graph is on the bottom and the highest is on the top
     };
   }
 
   private updateChart() {
+    console.log("chartupdated")
     this.chartOptions.series = [
       {
         name: this.player1?.name,
-        data: this.getPlayerAdditiveScore(this.player1)
+        data: this.playerOneAdditiveScore
       },
       {
         name: this.player2?.name,
-        data: this.getPlayerAdditiveScore(this.player2)
+        data: this.playerTwoAdditiveScore
       }
     ];
 
-  }
-
-  private getPlayerAdditiveScore(player: Player | undefined): number[] {
-    //if (!player) {
-    //  return [0];
-    //}
-    //let sum = 0;
-    //const playerPoints = this.gamePoints
-    //  .filter(x => x.player === player)
-    //  .map(x => x.pointValue * (x.moneyball?.multiplierForShooter ?? 1))
-    //  .map(x => {
-    //    sum = sum + x;
-    //    return sum;
-    //  });
-  //
-    //return [0, ...playerPoints];
-    return [0]
   }
 }
