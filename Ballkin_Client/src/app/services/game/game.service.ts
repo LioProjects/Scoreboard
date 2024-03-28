@@ -48,6 +48,17 @@ export class GameService {
   private playerTwoAdditiveGamePointsSubject = new BehaviorSubject<number[]>([]);
   playerTwoAdditiveGamePoints$ = this.playerTwoAdditiveGamePointsSubject.asObservable();
 
+  private moneyBallQueueSubject = new BehaviorSubject<Moneyball[]>(
+    [
+      {id: 1, multiplierForShooter: 1, multiplierForOpponent: 0},
+      {id: 2, multiplierForShooter: 2, multiplierForOpponent: 0},
+      {id: 3, multiplierForShooter: 3, multiplierForOpponent: -1},
+      {id: 2, multiplierForShooter: 2, multiplierForOpponent: 0},
+      {id: 3, multiplierForShooter: 3, multiplierForOpponent: -1},
+    ]
+  )
+  moneyBallQueueSubject$ = this.moneyBallQueueSubject.asObservable();
+
 
   setPlayerOne(player: Player){
     this.playerOneSubject.next(player);
@@ -76,7 +87,7 @@ export class GameService {
   }
 
   recordPlayerScore(player: Player, pointValue: number) {
-  const moneyballInPlay = this.moneyballEnabled ? this.getNextMoneyball() : undefined;
+  const moneyballInPlay = this.moneyballEnabled ? this.popMoneyball() : undefined;
   const newGamePoint = new PlayerGamePoint(player, pointValue, moneyballInPlay);
   this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
   console.log(this.gamePointsSubject.value);
@@ -128,7 +139,6 @@ export class GameService {
         return playerOneSum = (x.moneyball ? (x.pointValue * x.moneyball.multiplierForShooter) : x.pointValue) * (x.multiplier ?? 1) + playerOneSum;
       }
       else {
-        //here i dont want to map. i want to ommit this value and just adjust playerOneSum
         playerOneSum = (x.moneyball ? (x.pointValue * x.moneyball.multiplierForOpponent) : 0) * (x.multiplier ?? 1) + playerOneSum;
         return undefined;
       }
@@ -181,6 +191,10 @@ export class GameService {
 
   undo(){
     if (this.gamePointsSubject.value.length > 0){
+      const undoneGamePoint = this.gamePointsSubject.value[this.gamePointsSubject.value.length-1]
+      if (undoneGamePoint.moneyball){
+        this.moneyBallQueueSubject.next([...this.moneyBallQueueSubject.value.slice(1), undoneGamePoint.moneyball])
+      }
       this.gamePointsSubject.next([...this.gamePointsSubject.value.slice(0, -1)])
     }
   }
@@ -215,21 +229,18 @@ export class GameService {
   this.moneyballEnabled = !this.moneyballEnabled;
 }
   
-  getMoneyballQueue(): Moneyball[] {
-    return this.moneyballQueue;
-  }
-
-  getNextMoneyball(): Moneyball {
-    if(this.moneyballQueue.length > 0){
+  popMoneyball(): Moneyball {
       const randomMoneyballId = Math.floor(Math.random() * 3) + 1;
       const randomMoneyball = this.getMoneyballById(randomMoneyballId);
-      if (randomMoneyball) {
-        this.moneyballQueue.unshift(randomMoneyball);
-        return this.moneyballQueue.pop()!;
+      if (!randomMoneyball) {
+        throw Error("MoneyballId not found");
       }
+      const moneyballQueueTemp = this.moneyBallQueueSubject.getValue();
+      moneyballQueueTemp.unshift(randomMoneyball);
+      const moneyballInPlay = moneyballQueueTemp.pop();
+      this.moneyBallQueueSubject.next([...moneyballQueueTemp]);
+      return moneyballInPlay as Moneyball;
     }
-    return {id: 1, multiplierForShooter: 1, multiplierForOpponent: 0}
-  }
 
   private getMoneyballById(id: number): Moneyball | undefined {
     return MONEYBALLS.find(moneyball => moneyball.id === id);

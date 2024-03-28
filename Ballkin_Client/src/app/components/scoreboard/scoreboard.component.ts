@@ -29,8 +29,8 @@ export class ScoreboardComponent {
     playerTwoAvgGamePoints: number;
     playerOneShotsTaken: number;
     playerTwoShotsTaken: number;
+    moneyballQueue: Moneyball[];
     gameMode: string = "1v1";
-    moneyballQueue: Moneyball[] = [];
   
     //gamePointsSubscription: Subscription = new Subscription();
     playerOneSubscription: Subscription = new Subscription();
@@ -41,6 +41,8 @@ export class ScoreboardComponent {
     playerTwoAvgGamePointsSubscription: Subscription = new Subscription();
     playerOneShotsTakenSubscription: Subscription = new Subscription();
     playerTwoShotsTakenSubscription: Subscription = new Subscription();
+    moneyBallQueueSubscription: Subscription = new Subscription();
+
   
     constructor(private gameService: GameService) {
       this.playerOneGamePoints = 0;
@@ -49,12 +51,13 @@ export class ScoreboardComponent {
       this.playerTwoAvgGamePoints = 0;
       this.playerOneShotsTaken = 0;
       this.playerTwoShotsTaken = 0;
+      this.moneyballQueue = [];
     }
   
     ngOnInit() {
       this.subscribeToPlayerOneAssets();
       this.subscribeToPlayerTwoAssets();
-      this.moneyballQueue = this.gameService.getMoneyballQueue();
+      this.subscribeToMoneyballQueue();
     }
 
     subscribeToPlayerOneAssets(){
@@ -86,6 +89,12 @@ export class ScoreboardComponent {
         this.playerTwoShotsTaken = shotsTaken;
       })
     }
+
+    subscribeToMoneyballQueue(){
+      this.moneyBallQueueSubscription = this.gameService.moneyBallQueueSubject$.subscribe(moneyballQueue => {
+        this.moneyballQueue = moneyballQueue;
+      })
+    }
   
     ngOnDestroy() {
       this.playerOneSubscription.unsubscribe();
@@ -96,6 +105,7 @@ export class ScoreboardComponent {
       this.playerTwoAvgGamePointsSubscription.unsubscribe();
       this.playerOneShotsTakenSubscription.unsubscribe();
       this.playerTwoShotsTakenSubscription.unsubscribe();
+      this.moneyBallQueueSubscription.unsubscribe();
     }
   
     onPlayer1Change(player: Player) {

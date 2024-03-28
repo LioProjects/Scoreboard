@@ -61,10 +61,11 @@
 }
 
 .moneyball-queue-container{
-    margin-top: 5%;
-    right: 50%;
+    position: relative;
+    overflow: hidden;
+    margin-top: 5vh;
     height: 30%;
-    width: 50%;
+    width: 60%;
     background-color: grey;
 }
 
