@@ -14,6 +14,7 @@ import { MoneyballComponent } from "../moneyball/moneyball/moneyball.component";
 export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
     @Input() moneyballQueue!: Moneyball[];
 
+
     ngOnChanges(changes: SimpleChanges) {
         this.calculatePercentWidth();
         console.log("ngOnChanges triggered")
@@ -25,6 +26,7 @@ export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
         }
     }
 
+    //detect comparing the shotstaken of everyplayer. if one is less than the previous its a undone
     detectUndone(currentQueue: Moneyball[], previousQueue: Moneyball[]): boolean {
         if (
             previousQueue.slice(-1)[0] === currentQueue.slice(-2)[0] &&

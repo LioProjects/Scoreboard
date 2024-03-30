@@ -5,6 +5,7 @@ import { GameModeState } from '../../interfaces/game-mode-state/game-mode-state'
 import { MONEYBALLS, Moneyball } from '../../models/moneyball/moneyball.model';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
+import { Statistic } from '../../models/statistic/statistic.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,12 @@ import { Player } from '../../models/player/player.model';
 export class GameService {
   private gamePointsSubject = new BehaviorSubject<PlayerGamePoint[]>([]);
   gamePoints$ = this.gamePointsSubject.asObservable();
+
+  private statisticsHistory: Map<Player, Statistic>[] = [];
+
+  //observable currentstatistic
+  private currentStatisticSubject = new BehaviorSubject<Map<Player, Statistic>>(new Map());
+  currentStatistic$ = this.currentStatisticSubject.asObservable();
 
   //Player Observables
   private playerOneSubject = new BehaviorSubject<Player | undefined>(undefined);
@@ -84,6 +91,7 @@ export class GameService {
 
   addGamePoint(newGamePoint: PlayerGamePoint) {
     this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
+    this.newcalculateStatistics(newGamePoint);
   }
 
   recordPlayerScore(player: Player, pointValue: number) {
@@ -91,6 +99,61 @@ export class GameService {
   const newGamePoint = new PlayerGamePoint(player, pointValue, moneyballInPlay);
   this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
   console.log(this.gamePointsSubject.value);
+  this.newcalculateStatistics(newGamePoint);
+
+  }
+
+  newaddGamePoint(newGamePoint: PlayerGamePoint){
+    this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
+    this.newcalculateStatistics(newGamePoint);
+
+  }
+
+  newundo(){
+    this.statisticsHistory.pop();
+    this.currentStatisticSubject.next(this.statisticsHistory[this.statisticsHistory.length-1])
+    this.gamePointsSubject.next([...this.gamePointsSubject.value.slice(0, -1)])
+  }
+
+  newcalculateStatistics(newGamePoint: PlayerGamePoint){
+    const currentStatistic = this.currentStatisticSubject.getValue();
+    let newStatistic = new Map<Player, Statistic>();
+    
+    if (!currentStatistic.has(newGamePoint.player)){
+      currentStatistic.set(newGamePoint.player, new Statistic())
+    }
+
+    currentStatistic.forEach((playerStatistic, player) => {
+      let newPlayerNettoScore;
+      let newPlayerBruttoScore;
+      let newPlayerShotsTaken;
+      let newPlayerPointValueScored;
+      let newPlayerSufferedMalus;
+      if (player !== newGamePoint.player) {
+          newPlayerNettoScore = playerStatistic.nettoScore - (newGamePoint.moneyball?.multiplierForOpponent ?? 1) * newGamePoint.pointValue;
+          newPlayerSufferedMalus = playerStatistic.sufferedMalus + (newGamePoint.moneyball?.multiplierForOpponent ?? 1) * newGamePoint.pointValue;
+
+      } else {
+          newPlayerNettoScore = playerStatistic.nettoScore + (newGamePoint.moneyball?.multiplierForShooter ?? 1) * newGamePoint.pointValue;
+          newPlayerBruttoScore = playerStatistic.bruttoScore + newGamePoint.pointValue;
+          newPlayerShotsTaken = playerStatistic.shotsTaken + 1;
+          newPlayerPointValueScored = playerStatistic.pointValueScored;
+          const pointValueScoredUpdate = (newPlayerPointValueScored.get(newGamePoint.pointValue)?? 0) + 1;
+          newPlayerPointValueScored.set(newGamePoint.pointValue, pointValueScoredUpdate);
+      }
+      const newPlayerStatistic = new Statistic(
+        newPlayerNettoScore, 
+        newPlayerBruttoScore ?? playerStatistic.bruttoScore, 
+        newPlayerShotsTaken ?? playerStatistic.shotsTaken, 
+        newPlayerPointValueScored ?? playerStatistic.pointValueScored, 
+        newPlayerSufferedMalus ?? playerStatistic.sufferedMalus
+        )
+      newStatistic.set(player, newPlayerStatistic)
+  });
+  console.log("newStats ", newStatistic, newStatistic.keys)
+  this.statisticsHistory.push(newStatistic);
+  this.currentStatisticSubject.next(newStatistic);
+  
   }
 
   calculateStatistics(){
@@ -129,7 +192,6 @@ export class GameService {
           .reduce((total, currentValue) => total + currentValue, 0);
 
         this.playerTwoGamePointsSubject.next(playerTwoPoints + playerOneMalusPoints)
-
   }
 
   calculateAdditiveGamePoints(gamePoints: PlayerGamePoint[]){
