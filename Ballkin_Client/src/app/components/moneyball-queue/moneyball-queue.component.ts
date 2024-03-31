@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Moneyball } from '../../models/moneyball/moneyball.model';
+import { Player } from '../../models/player/player.model';
+import { Statistic } from '../../models/statistic/statistic.model';
 import { MoneyballComponent } from "../moneyball/moneyball/moneyball.component";
 
 @Component({
@@ -13,12 +15,14 @@ import { MoneyballComponent } from "../moneyball/moneyball/moneyball.component";
 })
 export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
     @Input() moneyballQueue!: Moneyball[];
+    @Input() currentStatistic!: Map<Player, Statistic>
 
 
     ngOnChanges(changes: SimpleChanges) {
         this.calculatePercentWidth();
         console.log("ngOnChanges triggered")
-        if (this.detectUndone(changes['moneyballQueue'].currentValue, changes['moneyballQueue'].previousValue)){
+        
+        if (this.detectUndone(changes['currentStatistic'].currentValue, changes['currentStatistic'].previousValue)){
             this.animateSlideLeft();
         }
         else{
@@ -27,17 +31,15 @@ export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
     }
 
     //detect comparing the shotstaken of everyplayer. if one is less than the previous its a undone
-    detectUndone(currentQueue: Moneyball[], previousQueue: Moneyball[]): boolean {
-        if (
-            previousQueue.slice(-1)[0] === currentQueue.slice(-2)[0] &&
-            previousQueue.slice(-2)[0] === currentQueue.slice(-3)[0] &&
-            previousQueue.slice(-3)[0] === currentQueue.slice(-4)[0]
-        ) {
-            console.log("undonedetected");
-            return true;
-        } else {
-            return false;
-        }
+    detectUndone(currentStatistic: Map<Player, Statistic>, previousStatistic: Map<Player, Statistic>): boolean {
+        let undoneDetected = false;
+        currentStatistic.forEach((playerStatistic, player) => {
+            if (!previousStatistic.has(player) || playerStatistic.shotsTaken < previousStatistic.get(player)!.shotsTaken){
+                console.log("undone detected")
+                undoneDetected = true;
+            } 
+        })
+        return undoneDetected;
     }
 
     ngAfterViewInit() {

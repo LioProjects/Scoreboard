@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -10,9 +10,8 @@ import {
   ChartComponent,
   NgApexchartsModule
 } from 'ng-apexcharts';
-import { Subscription } from 'rxjs';
 import { Player } from '../../models/player/player.model';
-import { GameService } from '../../services/game/game.service';
+import { Statistic } from '../../models/statistic/statistic.model';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -31,39 +30,24 @@ export type ChartOptions = {
   templateUrl: './scoreboard-graph.component.html',
   styleUrl: './scoreboard-graph.component.scss'
 })
-export class ScoreboardGraphComponent implements OnInit, OnDestroy{
+export class ScoreboardGraphComponent implements OnChanges{
+  //maybe can ommit the player
   @Input() player1!: Player | undefined;
   @Input() player2!: Player | undefined;
+
+  @Input() currentStatistic: Map<Player, Statistic> = new Map();
+
   @Input() gameMode!: string;
   @ViewChild("chart") chart?: ChartComponent;
 
-  private playerOneAdditiveScore: number[] = [0];
-  private playerTwoAdditiveScore: number[] = [0];
-
-
-  private playerOneAdditiveScoreSubscription = new Subscription();
-  private playerTwoAdditiveScoreSubscription = new Subscription();
-
   public chartOptions!: Partial<ChartOptions> | any;
 
-  constructor(private gameService: GameService) {
+  constructor() {
     this.initializeChartOptions();
   }
 
-  ngOnInit(): void {
-    this.playerOneAdditiveScoreSubscription = this.gameService.playerOneAdditiveGamePoints$.subscribe(additiveGamePoints =>{
-      this.playerOneAdditiveScore = additiveGamePoints
-      this.updateChart()
-    })
-    this.playerTwoAdditiveScoreSubscription = this.gameService.playerTwoAdditiveGamePoints$.subscribe(additiveGamePoints =>{
-      this.playerTwoAdditiveScore = additiveGamePoints
-      this.updateChart()
-    })
-  }
-
-  ngOnDestroy(): void {
-    this.playerOneAdditiveScoreSubscription.unsubscribe();
-    this.playerTwoAdditiveScoreSubscription.unsubscribe();
+  ngOnChanges(changes: SimpleChanges): void {
+    this.updateChart()
   }
 
   private initializeChartOptions() {
@@ -110,16 +94,16 @@ export class ScoreboardGraphComponent implements OnInit, OnDestroy{
 
   private updateChart() {
     console.log("chartupdated")
-    this.chartOptions.series = [
-      {
-        name: this.player1?.name,
-        data: this.playerOneAdditiveScore
-      },
-      {
-        name: this.player2?.name,
-        data: this.playerTwoAdditiveScore
-      }
-    ];
+    const seriesData: { name: string; data: number[]; }[] = [];
 
+    this.currentStatistic.forEach((statistic, player) => {
+      console.log(statistic.additiveScore)
+      seriesData.push({
+        name: player.name,
+        data: statistic.additiveScore
+      })
+    })
+
+    this.chartOptions.series = seriesData;
   }
 }
