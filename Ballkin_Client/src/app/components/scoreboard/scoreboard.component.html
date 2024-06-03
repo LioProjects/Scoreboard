@@ -20,7 +20,12 @@
                 <app-scoreboard-point-button [pointValue]="4" [player]="playerOne" [pointValuePercentage]="playerOne ? (currentStatistic.get(playerOne)?.avgPointValueScored?.get(4) ?? 0): 0"></app-scoreboard-point-button>
             </div>
         </div>
-        <app-scoreboard-graph class="scoreboard-graph" [currentStatistic]="currentStatistic" [player1]="playerOne" [player2]="playerTwo" [gameMode]="gameMode"></app-scoreboard-graph>
+        <div class="scoreboard-center">
+            <select class="game-mode-title" (change)="onGameModeSelect($event)">
+                <option *ngFor="let gameMode of getGamemodes()" [ngValue]="gameMode">{{ gameMode.getName() }}</option>
+            </select>
+            <app-scoreboard-graph class="scoreboard-graph" [currentStatistic]="currentStatistic" [player1]="playerOne" [player2]="playerTwo"></app-scoreboard-graph>
+        </div>
         <div class="player-scoreboard">
             <app-player-selector class="player-selector"  (selectedPlayerChange)="onPlayer2Change($event)"></app-player-selector>
             <div class="player-points">

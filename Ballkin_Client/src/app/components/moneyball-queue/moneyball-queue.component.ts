@@ -19,9 +19,7 @@ export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
 
 
     ngOnChanges(changes: SimpleChanges) {
-        this.calculatePercentWidth();
-        console.log("ngOnChanges triggered")
-        
+        this.calculatePercentWidth();        
         if (this.detectUndone(changes['currentStatistic'].currentValue, changes['currentStatistic'].previousValue)){
             this.animateSlideLeft();
         }
@@ -35,7 +33,6 @@ export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
         let undoneDetected = false;
         currentStatistic.forEach((playerStatistic, player) => {
             if (!previousStatistic.has(player) || playerStatistic.shotsTaken < previousStatistic.get(player)!.shotsTaken){
-                console.log("undone detected")
                 undoneDetected = true;
             } 
         })
@@ -47,7 +44,6 @@ export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
     }
 
     private calculatePercentWidth(): number {
-        console.log("calculatevue");
         const imageContainerWidth = document.querySelector('.image-container')!.clientWidth;
         const moneyballQueueContainerWidth = document.querySelector('.moneyball-queue-container')!.clientWidth;
 

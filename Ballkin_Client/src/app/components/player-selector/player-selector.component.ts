@@ -28,7 +28,6 @@ export class PlayerSelectorComponent{
     const selectedPlayerName = (event.target as HTMLSelectElement).value;
     this.players$.subscribe(players => {
       const selectedPlayer = players.find(player => player.name === selectedPlayerName);
-      console.log(selectedPlayerName)
       this.selectedPlayerChange.emit(selectedPlayer);
     });
   }

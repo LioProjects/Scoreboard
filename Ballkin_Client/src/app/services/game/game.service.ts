@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { OneVsOneGameModeState } from '../../game-modes/one-vs-one-game-mode/one-vs-one-game-mode-state';
+import { RoadToOneHundredGameModeState } from '../../game-modes/road-to-one-hundred-game-mode/road-to-one-hundred-game-mode-state';
 import { GameModeState } from '../../interfaces/game-mode-state/game-mode-state';
 import { MONEYBALLS, Moneyball } from '../../models/moneyball/moneyball.model';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
@@ -11,6 +12,8 @@ import { Statistic } from '../../models/statistic/statistic.model';
   providedIn: 'root'
 })
 export class GameService {
+  private gameEnded: boolean = false;
+
   private gamePointsSubject = new BehaviorSubject<PlayerGamePoint[]>([]);
   gamePoints$ = this.gamePointsSubject.asObservable();
 
@@ -41,6 +44,12 @@ export class GameService {
   )
   moneyBallQueueSubject$ = this.moneyBallQueueSubject.asObservable();
 
+  private moneyballEnabled: boolean = false;
+
+  private GAMEMODES: GameModeState[] = [
+    new OneVsOneGameModeState(this),
+    new RoadToOneHundredGameModeState(this)
+  ]
 
   setPlayerOne(player: Player){
     this.playerOneSubject.next(player);
@@ -50,14 +59,14 @@ export class GameService {
     this.playerTwoSubject.next(player);
   }
 
-  private moneyballQueue: Moneyball[] = [
-    {id: 1, multiplierForShooter: 1, multiplierForOpponent: 0},
-    {id: 2, multiplierForShooter: 2, multiplierForOpponent: 0},
-    {id: 3, multiplierForShooter: 3, multiplierForOpponent: -1},
-  ]
+  setGameStatus(isGameEnded: boolean){
+    this.gameEnded = isGameEnded;
+  }
 
-  //todo: link this to the button in scoreboard
-  private moneyballEnabled: boolean = false;
+  setGameMode(gameMode: GameModeState){
+    this.gameModeSubject.next(gameMode);
+    console.log("gamemode changed to ", gameMode.getName())
+  }
 
   addGamePoint(newGamePoint: PlayerGamePoint) {
     this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
@@ -67,8 +76,7 @@ export class GameService {
   recordPlayerScore(player: Player, pointValue: number) {
   const moneyballInPlay = this.moneyballEnabled ? this.popMoneyball() : undefined;
   const newGamePoint = new PlayerGamePoint(player, pointValue, moneyballInPlay);
-  //this.gameModeSubject.value.recordPlayerScore(newGamePoint)
-  this.addGamePoint(newGamePoint)
+  this.gameModeSubject.getValue().recordPlayerScore(newGamePoint, this.currentStatisticSubject.getValue())
   }
 
   undo(){
@@ -89,6 +97,7 @@ export class GameService {
     this.gamePointsSubject.next([]);
     this.statisticsHistory = [new Map()]
     this.currentStatisticSubject.next(new Map())
+    this.gameEnded = false;
   }
 
   calculateStatistics(newGamePoint: PlayerGamePoint){
@@ -107,13 +116,13 @@ export class GameService {
       let newPlayerAdditiveScore;
       let newPlayerSufferedMalus;
       if (player !== newGamePoint.player) {
-          newPlayerNettoScore = playerStatistic.nettoScore + (newGamePoint.moneyball?.multiplierForOpponent ?? 0) * newGamePoint.pointValue;
+          newPlayerNettoScore = playerStatistic.nettoScore + (newGamePoint.moneyball?.multiplierForOpponent ?? 0) * newGamePoint.pointValue * newGamePoint.multiplier;
           newPlayerAdditiveScore = [...playerStatistic.additiveScore]
           newPlayerAdditiveScore[playerStatistic.additiveScore.length-1] = newPlayerNettoScore;
           newPlayerSufferedMalus = playerStatistic.sufferedMalus + (newGamePoint.moneyball?.multiplierForOpponent ?? 0) * newGamePoint.pointValue;
 
       } else {
-          newPlayerNettoScore = playerStatistic.nettoScore + (newGamePoint.moneyball?.multiplierForShooter ?? 1) * newGamePoint.pointValue;
+          newPlayerNettoScore = playerStatistic.nettoScore + (newGamePoint.moneyball?.multiplierForShooter ?? 1) * newGamePoint.pointValue * newGamePoint.multiplier;
           newPlayerBruttoScore = playerStatistic.bruttoScore + newGamePoint.pointValue;
           newPlayerShotsTaken = playerStatistic.shotsTaken + 1;
           newPlayerPointValueScored = playerStatistic.pointValueScored;
@@ -132,7 +141,6 @@ export class GameService {
         )
       newStatistic.set(player, newPlayerStatistic)
   });
-  console.log("newStats ", newStatistic, newStatistic.keys)
   this.statisticsHistory.push(newStatistic);
   this.currentStatisticSubject.next(newStatistic);
   }
@@ -160,5 +168,9 @@ export class GameService {
 
   private getMoneyballById(id: number): Moneyball | undefined {
     return MONEYBALLS.find(moneyball => moneyball.id === id);
+  }
+
+  getGameModes(): GameModeState[]{
+    return this.GAMEMODES;
   }
 }

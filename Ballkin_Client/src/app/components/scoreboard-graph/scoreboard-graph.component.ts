@@ -37,7 +37,6 @@ export class ScoreboardGraphComponent implements OnChanges{
 
   @Input() currentStatistic: Map<Player, Statistic> = new Map();
 
-  @Input() gameMode!: string;
   @ViewChild("chart") chart?: ChartComponent;
 
   public chartOptions!: Partial<ChartOptions> | any;
@@ -63,15 +62,15 @@ export class ScoreboardGraphComponent implements OnChanges{
         }
       ],
       chart: {
-        height: 350,
+        toolbar: {
+          show: false,
+        },
+        height: '500px',
+        width: '100%',
         type: "line",
         zoom: {
           enabled: true,
         }
-      },
-      title: {
-        text: "1v1",
-        align: "left"
       },
       dataLabels: {
         enabled: false
@@ -87,23 +86,54 @@ export class ScoreboardGraphComponent implements OnChanges{
       },
       xaxis: {
         categories: Array.from({ length: 1000 }, (_, index) => index),
+        range: 15
       },
+      responsive: [
+        {
+          breakpoint: 1000,
+          options: {
+            xaxis: {
+              range: 10
+            }
+          }
+        }
+      ]
       //Todo: adjust y axis to the visible graph so that the lowest value of the graph is on the bottom and the highest is on the top
     };
   }
 
   private updateChart() {
-    console.log("chartupdated")
     const seriesData: { name: string; data: number[]; }[] = [];
 
     this.currentStatistic.forEach((statistic, player) => {
-      console.log(statistic.additiveScore)
       seriesData.push({
         name: player.name,
         data: statistic.additiveScore
       })
     })
 
+    //this.chartOptions.chart = {height: this.determineChartHeight() * 0.75}
+
     this.chartOptions.series = seriesData;
+  }
+
+  private determineChartHeight(): number {
+    // Get the parent element with the class "scoreboard-center"
+    const scoreboardCenter = document.getElementsByClassName("scoreboard-center")[0];
+    
+    // Check if the element exists
+    if (scoreboardCenter) {
+      // Get the height of the parent element
+      const height = scoreboardCenter.clientHeight;
+      
+      // You may want to log or use the height here
+      console.log("Height of .scoreboard-center:", height);
+      
+      // Return the height
+      return height;
+    } else {
+      // Return a default height or handle the case where the element is not found
+      return 0;
+    }
   }
 }

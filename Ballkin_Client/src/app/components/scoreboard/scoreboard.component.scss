@@ -42,8 +42,24 @@
     background-color: darkgray;
 }
 
-.scoreboard-graph{
+.scoreboard-center{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     width: 35%;
+    align-items: center;
+}
+
+.game-mode-title{
+    font-size: 2.5vh;
+    margin: 2%;
+    padding: 2%;
+}
+
+.scoreboard-graph{
+    height: 200px;
+    width: 100%;
 }
 
 .player-shots-taken{

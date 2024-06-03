@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { OneVsOneGameModeState } from '../../game-modes/one-vs-one-game-mode/one-vs-one-game-mode-state';
+import { GameModeState } from '../../interfaces/game-mode-state/game-mode-state';
 import { Moneyball } from '../../models/moneyball/moneyball.model';
 import { Player } from '../../models/player/player.model';
 import { Statistic } from '../../models/statistic/statistic.model';
@@ -27,11 +29,12 @@ export class ScoreboardComponent {
     moneyballQueue: Moneyball[] = [];
     moneyballEnabled: boolean = false;
 
-    gameMode: string = "1v1";
+    gameMode: GameModeState = new OneVsOneGameModeState(this.gameService);
 
     playerOneSubscription: Subscription = new Subscription();
     playerTwoSubscription: Subscription = new Subscription();
     currentStatisticSubscription: Subscription = new Subscription();
+    gameModeSubscription: Subscription = new Subscription()
     moneyBallQueueSubscription: Subscription = new Subscription();
 
 
@@ -43,6 +46,7 @@ export class ScoreboardComponent {
       this.subscribeToPlayerOne();
       this.subscribeToPlayerTwo();
       this.subscribeToCurrentStatistic();
+      this.subscribeToGameMode();
       this.subscribeToMoneyballQueue();
     }
 
@@ -64,6 +68,12 @@ export class ScoreboardComponent {
       })
     }
 
+    subscribeToGameMode(){
+      this.gameModeSubscription = this.gameService.gameMode$.subscribe(gameMode => {
+        this.gameMode = gameMode;
+      })
+    }
+
     subscribeToMoneyballQueue(){
       this.moneyBallQueueSubscription = this.gameService.moneyBallQueueSubject$.subscribe(moneyballQueue => {
         this.moneyballQueue = moneyballQueue;
@@ -74,6 +84,7 @@ export class ScoreboardComponent {
       this.playerOneSubscription.unsubscribe();
       this.playerTwoSubscription.unsubscribe();
       this.currentStatisticSubscription.unsubscribe();
+      this.gameModeSubscription.unsubscribe();
       this.moneyBallQueueSubscription.unsubscribe();
     }
   
@@ -101,5 +112,21 @@ export class ScoreboardComponent {
         this.gameService.toggleMoneyball();
         this.moneyballEnabled = this.gameService.getMoneyballEnabled()
     }
+
+    getGamemodes(): GameModeState[]{
+      return this.gameService.getGameModes()
+    }
+
+    onGameModeSelect(event: Event) {
+      const selectedGameModeName = (event.target as HTMLSelectElement).value;
+      const newGameMode = this.getGamemodes().find(gameMode => gameMode.getName() === selectedGameModeName)
+      if (newGameMode){
+        this.gameService.setGameMode(newGameMode);
+      }
+      else{
+        console.log("Could not find Gamemode in GamemodeList")
+      }
+    }
+      
   }
 
