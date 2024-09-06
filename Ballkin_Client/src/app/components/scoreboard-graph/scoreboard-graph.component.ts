@@ -61,12 +61,12 @@ export class ScoreboardGraphComponent implements OnChanges{
           data: [0]
         }
       ],
-      chart: {
+      chart: {        
+        height: '100%', 
+        width: "100%",
         toolbar: {
           show: false,
         },
-        height: '500px',
-        width: '100%',
         type: "line",
         zoom: {
           enabled: true,
@@ -88,13 +88,17 @@ export class ScoreboardGraphComponent implements OnChanges{
         categories: Array.from({ length: 1000 }, (_, index) => index),
         range: 15
       },
+      yaxis:{
+        range: 1
+      },
       responsive: [
         {
           breakpoint: 1000,
           options: {
             xaxis: {
               range: 10
-            }
+            },
+            
           }
         }
       ]
