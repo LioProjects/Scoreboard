@@ -83,25 +83,26 @@ export class ScoreboardGraphComponent implements OnChanges{
           colors: ["#f3f3f3", "transparent"],
           opacity: 0.5
         }
+      },      
+      yaxis:{
+        range: 5
       },
       xaxis: {
         categories: Array.from({ length: 1000 }, (_, index) => index),
-        range: 15
+        range: 12
       },
-      yaxis:{
-        range: 1
-      },
-      responsive: [
-        {
-          breakpoint: 1000,
-          options: {
-            xaxis: {
-              range: 10
-            },
-            
-          }
-        }
-      ]
+
+      //responsive: [
+      //  {
+      //    breakpoint: 1000,
+      //    options: {
+      //      xaxis: {
+      //        range: 10
+      //      },
+      //      
+      //    }
+      //  }
+      //]
       //Todo: adjust y axis to the visible graph so that the lowest value of the graph is on the bottom and the highest is on the top
     };
   }
@@ -119,6 +120,7 @@ export class ScoreboardGraphComponent implements OnChanges{
     //this.chartOptions.chart = {height: this.determineChartHeight() * 0.75}
 
     this.chartOptions.series = seriesData;
+    this.chartOptions.yaxis.max = this.chartMinClipOff();
   }
 
   private determineChartHeight(): number {
@@ -139,5 +141,24 @@ export class ScoreboardGraphComponent implements OnChanges{
       // Return a default height or handle the case where the element is not found
       return 0;
     }
+  }
+
+  private chartMinClipOff (){
+    let maxNettoScore = -Infinity;
+
+    this.currentStatistic.forEach((stat, player) =>{
+      if (stat.nettoScore > maxNettoScore){
+        maxNettoScore = stat.nettoScore;
+      }
+    });
+    
+    if (maxNettoScore <= 50){
+      console.log("default", 0);
+      return 0;
+    }
+    else{
+      console.log(maxNettoScore-50)
+      return  maxNettoScore-50;
+    } 
   }
 }

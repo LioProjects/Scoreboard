@@ -44,9 +44,11 @@ export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
     }
 
     private calculatePercentWidth(): number {
+        if (!document.querySelector('.image-container')){
+            return 100;
+        }
         const imageContainerWidth = document.querySelector('.image-container')!.clientWidth;
-        const moneyballQueueContainerWidth = document.querySelector('.moneyball-queue-container')!.clientWidth;
-
+        const moneyballQueueContainerWidth = document.querySelector('.moneyball-queue-container')!.clientWidth
         return (imageContainerWidth / moneyballQueueContainerWidth) * 100;
     }
 
