@@ -1,3 +1,4 @@
+//Todo: send the last created statistic of both players back to the backend
 export class Statistic {
     nettoScore: number;
     bruttoScore: number;
