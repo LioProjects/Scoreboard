@@ -7,6 +7,7 @@ import { MONEYBALLS, Moneyball } from '../../models/moneyball/moneyball.model';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
 import { Statistic } from '../../models/statistic/statistic.model';
+import { createGame, getGames } from '../api/game.api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -91,6 +92,10 @@ export class GameService {
     }
     this.gamePointsSubject.next([...this.gamePointsSubject.value.slice(0, -1)])
 
+  }
+
+  saveGame(){
+    createGame(this.currentStatisticSubject.getValue())
   }
 
   resetGame(){

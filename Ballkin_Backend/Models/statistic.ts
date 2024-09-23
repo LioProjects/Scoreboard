@@ -5,13 +5,13 @@ interface IStatistic {
     playerId: Schema.Types.ObjectId;
     gameId: Schema.Types.ObjectId;
     nettoScore: number;
-    //bruttoScore: number;
-    //shotsTaken: number;
-    //avgBruttoScore: number;
-    //pointValueScored: Map<number, number>;
-    //avgPointValueScored: Map<number, number>;
-    //sufferedMalus: number;
-    //additiveScore: number[];
+    bruttoScore: number;
+    shotsTaken: number;
+    avgBruttoScore: number;
+    pointValueScored: Map<number, number>;
+    avgPointValueScored: Map<number, number>;
+    sufferedMalus: number;
+    additiveScore: number[];
 }
 
 const statisticSchema = new Schema<IStatistic>({

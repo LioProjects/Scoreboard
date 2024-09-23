@@ -105,7 +105,7 @@ export class ScoreboardComponent {
     }
   
     saveGame() {
-      console.log("save Game to be implemented");
+      this.gameService.saveGame();
     }
 
     toggelMoneyball(){

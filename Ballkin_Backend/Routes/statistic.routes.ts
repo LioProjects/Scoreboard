@@ -17,7 +17,7 @@ statisticRoute.get('/', async (req, res) => {
 statisticRoute.get('/:id', async (req, res) => {
   try{
     const game = await Game.findById(req.params.id);
-    res.status(200).json(game);;
+    res.status(200).json(game);
   } catch (error) {
     console.error('Error fetching game:', error);
     res.status(500).json({ message: 'Error fetching game' });
