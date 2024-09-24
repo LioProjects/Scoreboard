@@ -1,20 +1,14 @@
 import { Game } from "../game/game.model";
 
+//Todo change _id in backend that it is id
 export class Player {
     name: string;
-    id: number;
+    _id: number;
     games?: Game[];
 
     constructor(id: number, name: string) {
         this.name = name;
-        this.id = id;
+        this._id = id;
     }
 }
 
-export const PLAYERS: Player[] = [
-    new Player(1, "Lionel"),
-    new Player(2, "Nico"),
-    new Player(3, "Noel"),
-    new Player(4, "Johannes"),
-    new Player(5, "Alec")
-]

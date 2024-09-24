@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-interface IPlayer {
+export interface IPlayer {
     name: string;
 }
 
@@ -10,3 +10,5 @@ const playerSchema = new Schema<IPlayer>({
 });
 
 const Player = model<IPlayer>("Player", playerSchema);
+
+export default Player;

@@ -14,21 +14,17 @@ import { PlayerService } from '../../services/player/player.service';
 })
 
 export class PlayerSelectorComponent{
-  @Input() selectedPlayer: Player | undefined;
+  @Input() selectedPlayer: Player | null = null;
   @Output() selectedPlayerChange = new EventEmitter<Player>();
   
   players$: Observable<Player[]>;
 
   constructor(private playerService: PlayerService) {
-    this.players$ = this.playerService.getPlayers();
+    this.players$ = this.playerService.getBackendPlayers();
   }
 
-  //needs rework. check id instead of names (if two names are the same we fucked)
-  onPlayerSelect(event: Event) {
-    const selectedPlayerName = (event.target as HTMLSelectElement).value;
-    this.players$.subscribe(players => {
-      const selectedPlayer = players.find(player => player.name === selectedPlayerName);
-      this.selectedPlayerChange.emit(selectedPlayer);
-    });
+  onPlayerSelect(player: Player) {
+    this.selectedPlayerChange.emit(player);  
   }
+
 }

@@ -2,6 +2,7 @@ import express from "express";
 import { statisticRoute } from "./Routes/statistic.routes";
 import { connectToDB } from "./config/mongoose";
 import cors from 'cors';
+import { playerRoute } from "./Routes/player.routes";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
 })
 
 app.use('/statistics', statisticRoute);
+app.use('/players', playerRoute)
 
 connectToDB();
 

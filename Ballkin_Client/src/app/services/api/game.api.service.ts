@@ -8,7 +8,7 @@ const STATISTIC_ENDPOINT = `${BASE_URL}/statistics`;
 
 const convertStatisticMapToArray = (gameData: Map<Player, Statistic>) => {
   const statisticsArray = Array.from(gameData.entries()).map(([player, statistic]) => ({
-    playerId: player.id, 
+    playerId: player._id, 
     nettoScore: statistic.nettoScore,
     bruttoScore: statistic.bruttoScore,
     shotsTaken: statistic.shotsTaken,
@@ -18,6 +18,7 @@ const convertStatisticMapToArray = (gameData: Map<Player, Statistic>) => {
     sufferedMalus: statistic.sufferedMalus,
     additiveScore: statistic.additiveScore
   }));
+  console.log({playerStatistics: statisticsArray})
   return { playerStatistics: statisticsArray};
 }
 

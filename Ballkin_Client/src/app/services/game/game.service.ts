@@ -95,7 +95,7 @@ export class GameService {
   }
 
   saveGame(){
-    createGame(this.currentStatisticSubject.getValue())
+    createGame(this.currentStatisticSubject.getValue())    
   }
 
   resetGame(){
