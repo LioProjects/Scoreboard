@@ -1,11 +1,9 @@
-export class Game {
-    player1: number;
-    player2: number;
-    player1Points?: number[];
-    player2Points?: number[];
+import { Statistic } from "../statistic/statistic.model";
 
-    constructor(player1: number, player2: number){
-        this.player1 = player1;
-        this.player2 = player2;
+export class Game {
+    playerStatistics: Statistic[];
+
+    constructor(playerStatistics: Statistic[]){
+        this.playerStatistics = playerStatistics;
     }
 }

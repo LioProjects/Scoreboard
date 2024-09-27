@@ -1,0 +1,27 @@
+<div class="statistic-overview">
+  <div class="statistic-overview-table-container">
+    <table class="statistic-overview-table">
+        <thead>
+          <tr>
+            <th>Player 1</th>
+            <th>Player 2</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let statistic of gameStatistics; let i = index" (click)="showDetails(statistic)">
+            <td>{{ statistic.playerStatistics[0].playerId?.slice(-2) }}</td>
+            <td>{{ statistic.playerStatistics[1].playerId?.slice(-2) }}</td>
+            <td>{{ statistic.playerStatistics[0].nettoScore }} : {{ statistic.playerStatistics[1].nettoScore }}</td>
+          </tr>
+        </tbody>
+      </table>
+    <!---->
+  </div>
+  <div class="statistic-detail" *ngIf="detailedStatistic">
+    {{detailedStatistic.playerStatistics[0]?.bruttoScore}}
+    {{detailedStatistic.playerStatistics[0]?.avgBruttoScore}}
+    {{detailedStatistic.playerStatistics[0]?.pointValueScored}}
+  </div>
+</div>
+  

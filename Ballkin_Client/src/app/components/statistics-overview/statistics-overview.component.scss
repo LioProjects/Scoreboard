@@ -1,0 +1,29 @@
+.statistic-overview{
+    display: flex;
+    height: 100%;    
+}
+.statistic-overview-table-container, .statistic-detail{
+    flex: 1;
+    font-size: 3cqmin;
+    padding: 5px;
+}
+
+.statistic-overview-table-container{
+    overflow: scroll;
+    scrollbar-width: none;
+    background-color: gray;
+}
+.statistic-overview-table{
+    width: 100%;
+    text-align: center;
+    border-spacing: 0;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.statistic-detail{
+    background-color: darkgrey;
+}
+

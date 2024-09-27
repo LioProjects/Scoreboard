@@ -1,5 +1,6 @@
-//Todo: send the last created statistic of both players back to the backend
+//Todo: add player name to the statistic
 export class Statistic {
+    playerId?: string;
     nettoScore: number;
     bruttoScore: number;
     shotsTaken: number;
