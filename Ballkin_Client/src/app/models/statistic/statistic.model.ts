@@ -1,6 +1,7 @@
 //Todo: add player name to the statistic
 export class Statistic {
-    playerId?: string;
+    //Todo: this is the source of many undefined type that i need
+    playerId?: number;
     nettoScore: number;
     bruttoScore: number;
     shotsTaken: number;

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
+import { catchError, from, map, Observable, of } from 'rxjs';
 import { Player } from '../../models/player/player.model';
 import axios from 'axios';
 
@@ -12,14 +12,40 @@ export class PlayerService {
   readonly BASE_URL = 'http://localhost:5000';
 
   readonly PLAYER_ENDPOINT = `${this.BASE_URL}/players`
+
+  private cachedPlayers: Player[] | null = null; // Cache variable
+
+  constructor() { }
+
+  //Todo: When to invalidate cashe
+  getBackendPlayers(): Observable<Player[]> {
+    if (this.cachedPlayers) {
+      return of(this.cachedPlayers);
+    }
+
+    return from(
+      axios.get<Player[]>(this.PLAYER_ENDPOINT).then(response => {
+        this.cachedPlayers = response.data; 
+        return this.cachedPlayers;
+      })
+    );
+  }
   
-constructor() { }
-
-getBackendPlayers(): Observable<Player[]> {
-  return from(
-    axios.get<Player[]>(this.PLAYER_ENDPOINT).then(response => response.data)
+getPlayerNameById(playerId: number): Observable<string> {
+  return this.getBackendPlayers().pipe(
+    map(players => {
+      const player = players.find(player => player._id === playerId);
+      if (!player) {
+        throw new Error('Player not found');
+      }
+      return player.name;
+    }),
+    catchError(err => {
+      console.error(err.message);
+      return of('Unknown Player');
+    })
   );
-
+}
 }
 
 /*
@@ -49,4 +75,4 @@ updatePlayer(updatedPlayer: Player): Observable<Player[]> {
   }
   return of(this.players);
 }*/
-}
+

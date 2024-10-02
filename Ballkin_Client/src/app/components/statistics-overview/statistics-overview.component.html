@@ -9,19 +9,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let statistic of gameStatistics; let i = index" (click)="showDetails(statistic)">
-            <td>{{ statistic.playerStatistics[0].playerId?.slice(-2) }}</td>
-            <td>{{ statistic.playerStatistics[1].playerId?.slice(-2) }}</td>
+          <tr *ngFor="let statistic of gameStatistics; let i = index" (click)="showDetails(statistic)" [ngClass]="{'highlight': detailedStatistic === statistic}">
+            <td>{{ playerNameRecon(statistic.playerStatistics[0].playerId) | async }}</td>
+            <td>{{ playerNameRecon(statistic.playerStatistics[1].playerId) | async }}</td>
             <td>{{ statistic.playerStatistics[0].nettoScore }} : {{ statistic.playerStatistics[1].nettoScore }}</td>
           </tr>
         </tbody>
       </table>
-    <!---->
   </div>
-  <div class="statistic-detail" *ngIf="detailedStatistic">
-    {{detailedStatistic.playerStatistics[0]?.bruttoScore}}
-    {{detailedStatistic.playerStatistics[0]?.avgBruttoScore}}
-    {{detailedStatistic.playerStatistics[0]?.pointValueScored}}
+  <div class="statistic-detail-container" *ngIf="detailedStatistic">
+    <app-statistic-detail [statisticInDetail]="detailedStatistic"></app-statistic-detail>
   </div>
 </div>
   

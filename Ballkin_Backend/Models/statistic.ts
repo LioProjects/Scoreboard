@@ -1,26 +1,12 @@
-/*
+
 import { Schema, model, connect } from 'mongoose';
-
-interface IStatistic {
+//todo: create service that calculates it and sends it to frontend
+export interface IPlayerStatistic {
     playerId: Schema.Types.ObjectId;
-    gameId: Schema.Types.ObjectId;
-    nettoScore: number;
-    bruttoScore: number;
-    shotsTaken: number;
+    numberOfGamesPlayed: number;
+    winPercentage: number;
+    totalBruttoScore: number;
     avgBruttoScore: number;
-    pointValueScored: Map<number, number>;
+    shotsTaken: number;
     avgPointValueScored: Map<number, number>;
-    sufferedMalus: number;
-    additiveScore: number[];
 }
-
-const statisticSchema = new Schema<IStatistic>({
-    playerId: { type: Schema.Types.ObjectId, ref: 'Player', required: true },
-    gameId: { type: Schema.Types.ObjectId, ref: 'Game', required: true },
-    nettoScore: { type: Number, required: true},
-});
-
-const Statistic = model<IStatistic>("Statistic", statisticSchema);
-
-export default Statistic;
-*/
