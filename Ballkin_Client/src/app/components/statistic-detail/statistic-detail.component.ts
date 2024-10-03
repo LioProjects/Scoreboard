@@ -5,11 +5,12 @@ import { StatisticCardComponent } from '../statistic-card/statistic-card.compone
 import { PlayerService } from '../../services/player/player.service';
 import { Observable, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { ScoreboardGraphComponent } from '../scoreboard-graph/scoreboard-graph.component';
 
 @Component({
   selector: 'app-statistic-detail',
   standalone: true,
-  imports: [CommonModule, StatisticCardComponent],
+  imports: [CommonModule, StatisticCardComponent, ScoreboardGraphComponent],
   templateUrl: './statistic-detail.component.html',
   styleUrl: './statistic-detail.component.scss'
 })
@@ -25,25 +26,9 @@ export class StatisticDetailComponent {
     }
     return this.playerService.getPlayerNameById(playerId);
   }
-
-  //todo: why do i need the undefined here (for now this method is not needed)
-  stringifyMap(map: Map<number, number> | undefined): string {
-    
-    if (!map) {
-      return 'no Map to stringify';
-  }
-
-    let result = '';
-
-    map.forEach((value, key) => {
-      result += `${key}: ${value}%, `;
-    });
-
-    return result.slice(0, -2);
-  }
-
+  
   //todo: why do i need the undefined here
-  mapToArray(map: Map<number, number>| undefined): number[]{
+  mapToArray(map: Map<number, number> | undefined): number[]{
     if (!map) {
       return [];
   }

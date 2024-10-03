@@ -10,9 +10,9 @@
         </thead>
         <tbody>
           <tr *ngFor="let statistic of gameStatistics; let i = index" (click)="showDetails(statistic)" [ngClass]="{'highlight': detailedStatistic === statistic}">
-            <td>{{ playerNameRecon(statistic.playerStatistics[0].playerId) | async }}</td>
-            <td>{{ playerNameRecon(statistic.playerStatistics[1].playerId) | async }}</td>
-            <td>{{ statistic.playerStatistics[0].nettoScore }} : {{ statistic.playerStatistics[1].nettoScore }}</td>
+            <td>{{ playerNameRecon(statistic.playerStatistics[0]?.playerId) | async }}</td>
+            <td>{{ playerNameRecon(statistic.playerStatistics[1]?.playerId) | async }}</td>
+            <td>{{ statistic.playerStatistics[0]?.nettoScore }} : {{ statistic.playerStatistics[1]?.nettoScore }}</td>
           </tr>
         </tbody>
       </table>

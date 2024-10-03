@@ -1,7 +1,5 @@
-//Todo: add player name to the statistic
 export class Statistic {
-    //Todo: this is the source of many undefined type that i need
-    playerId?: number;
+    playerId: number;
     nettoScore: number;
     bruttoScore: number;
     shotsTaken: number;
@@ -13,6 +11,7 @@ export class Statistic {
 
 
 constructor(
+    playerId: number,
     nettoScore: number = 0,
     bruttoScore: number = 0,
     shotsTaken: number = 0,
@@ -26,6 +25,7 @@ constructor(
     additiveScore = [0],
     sufferedMalus: number = 0
 ) {
+    this.playerId = playerId;
     this.nettoScore = nettoScore;
     this.bruttoScore = bruttoScore;
     this.shotsTaken = shotsTaken;

@@ -10,7 +10,9 @@ import {
   ChartComponent,
   NgApexchartsModule
 } from 'ng-apexcharts';
-import { Player } from '../../models/player/player.model';
+import { Game } from '../../models/game/game.model';
+import { PlayerService } from '../../services/player/player.service';
+import { forkJoin, map, Observable } from 'rxjs';
 import { Statistic } from '../../models/statistic/statistic.model';
 
 export type ChartOptions = {
@@ -31,17 +33,14 @@ export type ChartOptions = {
   styleUrl: './scoreboard-graph.component.scss'
 })
 export class ScoreboardGraphComponent implements OnChanges{
-  //maybe can ommit the player
-  @Input() player1!: Player | undefined;
-  @Input() player2!: Player | undefined;
-
-  @Input() currentStatistic: Map<Player, Statistic> = new Map();
+  //Todo: input if gameEnded show whole graph and not only 12 in the x axis
+  @Input() currentStatistic: Game = new Game();
 
   @ViewChild("chart") chart?: ChartComponent;
 
   public chartOptions!: Partial<ChartOptions> | any;
 
-  constructor() {
+  constructor(private playerService: PlayerService) {
     this.initializeChartOptions();
   }
 
@@ -53,12 +52,10 @@ export class ScoreboardGraphComponent implements OnChanges{
     this.chartOptions = {
       series: [
         {
-          name: this.player1?.name,
-          data: [0]
+          data: []
         },
         {
-          name: this.player2?.name,
-          data: [0]
+          data: []
         }
       ],
       chart: {        
@@ -89,38 +86,38 @@ export class ScoreboardGraphComponent implements OnChanges{
       },
       xaxis: {
         categories: Array.from({ length: 1000 }, (_, index) => index),
-        range: 12
       },
-
-      //responsive: [
-      //  {
-      //    breakpoint: 1000,
-      //    options: {
-      //      xaxis: {
-      //        range: 10
-      //      },
-      //      
-      //    }
-      //  }
-      //]
-      //Todo: adjust y axis to the visible graph so that the lowest value of the graph is on the bottom and the highest is on the top
     };
   }
 
-  private updateChart() {
-    const seriesData: { name: string; data: number[]; }[] = [];
+  private updateChart(): void {
+    if (!this.currentStatistic?.playerStatistics?.length) {
+      this.resetChartSeries();
+      return;
+    }
 
-    this.currentStatistic.forEach((statistic, player) => {
-      seriesData.push({
-        name: player.name,
+    const observables = this.currentStatistic.playerStatistics.map(statistic =>
+      this.mapToChartData(statistic)
+    );
+
+    forkJoin(observables).subscribe(seriesData => {
+      this.chartOptions.series = seriesData;
+      this.chartOptions.yaxis.max = this.chartMinClipOff();
+    });
+  }
+
+  private resetChartSeries(): void {
+    this.chartOptions.series = [{ data: [] }, { data: [] }];
+  }
+
+  private mapToChartData(statistic: Statistic): Observable<{ name: string; data: number[] }> {
+    return this.playerService.getPlayerNameById(statistic.playerId).pipe(
+      map(playerName => ({
+        name: playerName || 'Unknown',
         data: statistic.additiveScore
-      })
-    })
+      }))
+    );
 
-    //this.chartOptions.chart = {height: this.determineChartHeight() * 0.75}
-
-    this.chartOptions.series = seriesData;
-    this.chartOptions.yaxis.max = this.chartMinClipOff();
   }
 
   private determineChartHeight(): number {
@@ -146,18 +143,16 @@ export class ScoreboardGraphComponent implements OnChanges{
   private chartMinClipOff (){
     let maxNettoScore = -Infinity;
 
-    this.currentStatistic.forEach((stat, player) =>{
-      if (stat.nettoScore > maxNettoScore){
-        maxNettoScore = stat.nettoScore;
+    this.currentStatistic.playerStatistics.forEach(statistic =>{
+      if (statistic.nettoScore > maxNettoScore){
+        maxNettoScore = statistic.nettoScore;
       }
     });
     
     if (maxNettoScore <= 50){
-      console.log("default", 0);
       return 0;
     }
     else{
-      console.log(maxNettoScore-50)
       return  maxNettoScore-50;
     } 
   }

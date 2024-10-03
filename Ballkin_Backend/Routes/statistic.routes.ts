@@ -26,8 +26,9 @@ statisticRoute.get('/:id', async (req, res) => {
 });
 
 statisticRoute.post('/', async (req, res) => {
+  console.log(req.body)
   const clientGame: IGame = req.body;
-  console.log(clientGame);
+  console.log(clientGame)
 
   try {
       const newGame = await Game.create(clientGame)  

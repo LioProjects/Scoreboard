@@ -12,7 +12,7 @@ import { GameService } from '../../services/game/game.service';
 
 //todo: input of gameservice
 export class ScoreboardPointButtonComponent {
-  @Input() player!: Player | undefined;
+  @Input() player!: Player | null;
   @Input() pointValue!: number
   @Input() pointValuePercentage: number = 0;
 

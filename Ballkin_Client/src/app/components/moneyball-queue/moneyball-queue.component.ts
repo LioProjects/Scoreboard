@@ -5,6 +5,7 @@ import { Moneyball } from '../../models/moneyball/moneyball.model';
 import { Player } from '../../models/player/player.model';
 import { Statistic } from '../../models/statistic/statistic.model';
 import { MoneyballComponent } from "../moneyball/moneyball/moneyball.component";
+import { Game } from '../../models/game/game.model';
 
 @Component({
     selector: 'app-moneyball-queue',
@@ -15,7 +16,7 @@ import { MoneyballComponent } from "../moneyball/moneyball/moneyball.component";
 })
 export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
     @Input() moneyballQueue!: Moneyball[];
-    @Input() currentStatistic!: Map<Player, Statistic>
+    @Input() currentStatistic!: Game;
 
 
     ngOnChanges(changes: SimpleChanges) {
@@ -28,11 +29,14 @@ export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
         }
     }
 
-    //detect comparing the shotstaken of everyplayer. if one is less than the previous its a undone
-    detectUndone(currentStatistic: Map<Player, Statistic>, previousStatistic: Map<Player, Statistic>): boolean {
+    detectUndone(currentStatistic: Game, previousStatistic: Game): boolean {
         let undoneDetected = false;
-        currentStatistic.forEach((playerStatistic, player) => {
-            if (!previousStatistic.has(player) || playerStatistic.shotsTaken < previousStatistic.get(player)!.shotsTaken){
+        if (!previousStatistic){
+            return false;
+        }
+        currentStatistic.playerStatistics.forEach(statistic => {
+            if (!previousStatistic.playerStatistics.find(previousStatistic => previousStatistic.playerId === statistic.playerId) 
+                || statistic.shotsTaken < previousStatistic.playerStatistics.find(previousStatistic => previousStatistic.playerId === statistic.playerId)!.shotsTaken){
                 undoneDetected = true;
             } 
         })

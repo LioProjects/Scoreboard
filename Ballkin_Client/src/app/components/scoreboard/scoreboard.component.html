@@ -1,48 +1,47 @@
-
 <div class="viewport">
     <div class="scoreboard">
         <div class="player-scoreboard">
             <app-player-selector class="player-selector"  (selectedPlayerChange)="onPlayer1Change($event)"></app-player-selector>
             <div class="player-points">
                 <div class="player-shots-taken">
-                    {{playerOne ? (currentStatistic.get(playerOne)?.shotsTaken ?? 0) : 0}}
+                    {{playerOne ? (getPlayerStatistic(playerOne._id)?.shotsTaken ?? 0) : 0}}
                 </div>
-                {{playerOne ? (currentStatistic.get(playerOne)?.nettoScore ?? 0) : 0}}
+                {{playerOne ? (getPlayerStatistic(playerOne._id)?.nettoScore ?? 0) : 0}}
                 <div class="avg-point-value">
-                    avg: {{playerOne ? (currentStatistic.get(playerOne)?.avgBruttoScore ?? 0) : 0}}
+                    avg: {{playerOne ? (getPlayerStatistic(playerOne._id)?.avgBruttoScore ?? 0) : 0}}
                 </div>
             </div>
             <div class="player-button-container">
-                <app-scoreboard-point-button [pointValue]="0" [player]="playerOne" [pointValuePercentage]="playerOne ? (currentStatistic.get(playerOne)?.avgPointValueScored?.get(0) ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="1" [player]="playerOne" [pointValuePercentage]="playerOne ? (currentStatistic.get(playerOne)?.avgPointValueScored?.get(1) ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="2" [player]="playerOne" [pointValuePercentage]="playerOne ? (currentStatistic.get(playerOne)?.avgPointValueScored?.get(2) ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="3" [player]="playerOne" [pointValuePercentage]="playerOne ? (currentStatistic.get(playerOne)?.avgPointValueScored?.get(3) ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="4" [player]="playerOne" [pointValuePercentage]="playerOne ? (currentStatistic.get(playerOne)?.avgPointValueScored?.get(4) ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="0" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.get(0) ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="1" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.get(1) ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="2" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.get(2) ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="3" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.get(3) ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="4" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.get(4) ?? 0): 0"></app-scoreboard-point-button>
             </div>
         </div>
         <div class="scoreboard-center">
             <select class="game-mode-title" (change)="onGameModeSelect($event)">
                 <option *ngFor="let gameMode of getGamemodes()" [ngValue]="gameMode">{{ gameMode.getName() }}</option>
             </select>
-            <app-scoreboard-graph class="scoreboard-graph" [currentStatistic]="currentStatistic" [player1]="playerOne" [player2]="playerTwo"></app-scoreboard-graph>
+            <app-scoreboard-graph class="scoreboard-graph" [currentStatistic]="currentStatistic"></app-scoreboard-graph>
         </div>
         <div class="player-scoreboard">
             <app-player-selector class="player-selector"  (selectedPlayerChange)="onPlayer2Change($event)"></app-player-selector>
             <div class="player-points">
                 <div class="player-shots-taken">
-                    {{playerTwo ? (currentStatistic.get(playerTwo)?.shotsTaken ?? 0) : 0}}
+                    {{playerTwo ? (getPlayerStatistic(playerTwo._id)?.shotsTaken ?? 0) : 0}}
                 </div>
-                {{playerTwo ? (currentStatistic.get(playerTwo)?.nettoScore ?? 0) : 0}}
+                {{playerTwo ? (getPlayerStatistic(playerTwo._id)?.nettoScore ?? 0) : 0}}
                 <div class="avg-point-value">
-                    avg: {{playerTwo ? (currentStatistic.get(playerTwo)?.avgBruttoScore ?? 0) : 0}}
+                    avg: {{playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgBruttoScore ?? 0) : 0}}
                 </div>
             </div>
             <div class="player-button-container">
-                <app-scoreboard-point-button [pointValue]="0" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (currentStatistic.get(playerTwo)?.avgPointValueScored?.get(0) ?? 0) : 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="1" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (currentStatistic.get(playerTwo)?.avgPointValueScored?.get(1) ?? 0) : 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="2" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (currentStatistic.get(playerTwo)?.avgPointValueScored?.get(2) ?? 0) : 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="3" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (currentStatistic.get(playerTwo)?.avgPointValueScored?.get(3) ?? 0) : 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="4" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (currentStatistic.get(playerTwo)?.avgPointValueScored?.get(4) ?? 0) : 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="0" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgPointValueScored?.get(0) ?? 0) : 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="1" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgPointValueScored?.get(1) ?? 0) : 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="2" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgPointValueScored?.get(2) ?? 0) : 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="3" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgPointValueScored?.get(3) ?? 0) : 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button [pointValue]="4" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgPointValueScored?.get(4) ?? 0) : 0"></app-scoreboard-point-button>
             </div>
         </div>
     </div>

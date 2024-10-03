@@ -1,4 +1,5 @@
 import { GameModeState } from "../../interfaces/game-mode-state/game-mode-state";
+import { Game } from "../../models/game/game.model";
 import { PlayerGamePoint } from "../../models/player-game-point/player-game-point.model";
 import { Player } from "../../models/player/player.model";
 import { Statistic } from "../../models/statistic/statistic.model";
@@ -10,8 +11,8 @@ export class RoadToOneHundredGameModeState implements GameModeState{
 
     constructor(private gameService: GameService){}
 
-    recordPlayerScore(playerGamePoint: PlayerGamePoint, currentStatistic: Map<Player, Statistic>): void {
-        const playerNettoScoreInProgress = (currentStatistic.get(playerGamePoint.player)?.nettoScore ?? 0) + playerGamePoint.pointValue * (playerGamePoint.moneyball?.multiplierForShooter ?? 1)
+    recordPlayerScore(playerGamePoint: PlayerGamePoint, currentStatistic: Game): void {
+        const playerNettoScoreInProgress = (currentStatistic.playerStatistics.find(statistic => statistic.playerId == playerGamePoint.player._id)?.nettoScore ?? 0) + playerGamePoint.pointValue * (playerGamePoint.moneyball?.multiplierForShooter ?? 1)
         if (playerNettoScoreInProgress >= 100 && playerGamePoint.pointValue !== 4) {
             this.gameService.setGameStatus(false)
             playerGamePoint.multiplier = 0;

@@ -1,3 +1,4 @@
+<!--not hardcode with playerstatistic[x] but rather for each player generate one of this. this solves the problem if theres only 1 player in the game that it doesnt crash-->
 <div class="statistic-detail">
     <div class="statistic-item">
         <div class="statistic-name-item">
@@ -9,13 +10,15 @@
         <app-statistic-card
         [statisticName]="'Ø Brutto Score'"
         [statisticValue]="statisticInDetail.playerStatistics[0].avgBruttoScore"/>
+        
         <app-statistic-card
         [statisticName]="'Ø Point Value'"
         [statisticValueArray]="mapToArray(statisticInDetail.playerStatistics[0].avgPointValueScored)"/>
+        
     </div>
     <div class="statistic-item">
         <div class="statistic-name-item">
-            {{ playerNameRecon(statisticInDetail.playerStatistics[1].playerId) | async }}
+            {{ playerNameRecon(statisticInDetail.playerStatistics[1]?.playerId) | async }}
         </div>
         <app-statistic-card
         [statisticName]="'Brutto Score'"
@@ -26,8 +29,8 @@
         <app-statistic-card
         [statisticName]="'Ø Point Value'"
         [statisticValueArray]="mapToArray(statisticInDetail.playerStatistics[1].avgPointValueScored)"/>    
+        
+
     </div>
-    <div class="diagram-item">
-        salamander
-    </div>
+    <app-scoreboard-graph class="diagram-item" [currentStatistic]="statisticInDetail"/>
 </div>

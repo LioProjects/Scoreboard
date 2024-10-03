@@ -7,28 +7,35 @@ import { MONEYBALLS, Moneyball } from '../../models/moneyball/moneyball.model';
 import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
 import { Player } from '../../models/player/player.model';
 import { Statistic } from '../../models/statistic/statistic.model';
-import { createGame, getGames } from '../api/game.api.service';
+import { Game } from '../../models/game/game.model';
+import { GameApiService } from '../api/game.api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
+
+  private gameApiService: GameApiService;
+
+  constructor() {
+    this.gameApiService = new GameApiService(); // Create an instance of GameService
+  }
   private gameEnded: boolean = false;
 
   private gamePointsSubject = new BehaviorSubject<PlayerGamePoint[]>([]);
   gamePoints$ = this.gamePointsSubject.asObservable();
 
-  private statisticsHistory: Map<Player, Statistic>[] = [new Map()];
+  private statisticsHistory: Game[] = [new Game()];
 
   //observable currentstatistic
-  private currentStatisticSubject = new BehaviorSubject<Map<Player, Statistic>>(new Map());
+  private currentStatisticSubject = new BehaviorSubject<Game>(new Game());
   currentStatistic$ = this.currentStatisticSubject.asObservable();
 
   //Player Observables
-  private playerOneSubject = new BehaviorSubject<Player | undefined>(undefined);
+  private playerOneSubject = new BehaviorSubject<Player | null>(null);
   playerOne$ = this.playerOneSubject.asObservable();
 
-  private playerTwoSubject = new BehaviorSubject<Player | undefined>(undefined);
+  private playerTwoSubject = new BehaviorSubject<Player | null>(null);
   playerTwo$ = this.playerTwoSubject.asObservable();
 
   private gameModeSubject = new BehaviorSubject<GameModeState>(new OneVsOneGameModeState(this));
@@ -95,32 +102,32 @@ export class GameService {
   }
 
   saveGame(){
-    createGame(this.currentStatisticSubject.getValue())    
+    this.gameApiService.createGame(this.currentStatisticSubject.getValue())
   }
 
   resetGame(){
     this.gamePointsSubject.next([]);
-    this.statisticsHistory = [new Map()]
-    this.currentStatisticSubject.next(new Map())
+    this.statisticsHistory = [];
+    this.currentStatisticSubject.next(new Game());
     this.gameEnded = false;
   }
 
   calculateStatistics(newGamePoint: PlayerGamePoint){
     const currentStatistic = this.currentStatisticSubject.getValue();
-    let newStatistic = new Map<Player, Statistic>();
+    let newStatistic = new Game([]);
     
-    if (!currentStatistic.has(newGamePoint.player)){
-      currentStatistic.set(newGamePoint.player, new Statistic())
+    if (!currentStatistic.playerStatistics.find(statistic => statistic.playerId === newGamePoint.player._id)){
+      currentStatistic.playerStatistics.push(new Statistic(newGamePoint.player._id))
     }
 
-    currentStatistic.forEach((playerStatistic, player) => {
+    currentStatistic.playerStatistics.forEach((playerStatistic) => {
       let newPlayerNettoScore;
       let newPlayerBruttoScore;
       let newPlayerShotsTaken;
       let newPlayerPointValueScored;
       let newPlayerAdditiveScore;
       let newPlayerSufferedMalus;
-      if (player !== newGamePoint.player) {
+      if (playerStatistic.playerId !== newGamePoint.player._id) {
           newPlayerNettoScore = playerStatistic.nettoScore + (newGamePoint.moneyball?.multiplierForOpponent ?? 0) * newGamePoint.pointValue * newGamePoint.multiplier;
           newPlayerAdditiveScore = [...playerStatistic.additiveScore]
           newPlayerAdditiveScore[playerStatistic.additiveScore.length-1] = newPlayerNettoScore;
@@ -137,6 +144,7 @@ export class GameService {
           newPlayerAdditiveScore.push(newPlayerNettoScore);
       }
       const newPlayerStatistic = new Statistic(
+        playerStatistic.playerId,
         newPlayerNettoScore, 
         newPlayerBruttoScore ?? playerStatistic.bruttoScore, 
         newPlayerShotsTaken ?? playerStatistic.shotsTaken, 
@@ -144,7 +152,7 @@ export class GameService {
         newPlayerAdditiveScore ?? playerStatistic.additiveScore,
         newPlayerSufferedMalus ?? playerStatistic.sufferedMalus
         )
-      newStatistic.set(player, newPlayerStatistic)
+        newStatistic.playerStatistics.push(newPlayerStatistic)
   });
   this.statisticsHistory.push(newStatistic);
   this.currentStatisticSubject.next(newStatistic);

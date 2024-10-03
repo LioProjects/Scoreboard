@@ -13,6 +13,7 @@ import { MoneyballQueueComponent } from "../moneyball-queue/moneyball-queue.comp
 import { PlayerSelectorComponent } from "../player-selector/player-selector.component";
 import { ScoreboardGraphComponent } from "../scoreboard-graph/scoreboard-graph.component";
 import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/scoreboard-point-button.component';
+import { Game } from '../../models/game/game.model';
 
 @Component({
     selector: 'app-scoreboard',
@@ -22,10 +23,10 @@ import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/score
     imports: [ScoreboardPointButtonComponent, PlayerSelectorComponent, ScoreboardGraphComponent, MoneyballQueueComponent, FormsModule, CommonModule]
 })
 export class ScoreboardComponent {
-
-    playerOne: Player | undefined;
-    playerTwo: Player | undefined;
-    currentStatistic: Map<Player, Statistic> = new Map();
+    //Todo: could omit playerOne(Two) because they are already in the currentStatistic. only an idea
+    playerOne: Player | null = null;
+    playerTwo: Player | null = null;
+    currentStatistic: Game = new Game();
     moneyballQueue: Moneyball[] = [];
     moneyballEnabled: boolean = false;
 
@@ -102,6 +103,7 @@ export class ScoreboardComponent {
   
     resetGame() {
       this.gameService.resetGame();
+      console.log(this.currentStatistic)
     }
   
     saveGame() {
@@ -126,6 +128,10 @@ export class ScoreboardComponent {
       else{
         console.log("Could not find Gamemode in GamemodeList")
       }
+    }
+
+    getPlayerStatistic(playerId: number){
+      return this.currentStatistic.playerStatistics.find(statistic => statistic.playerId === playerId);
     }
       
   }
