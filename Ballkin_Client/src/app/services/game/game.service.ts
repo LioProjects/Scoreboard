@@ -137,9 +137,8 @@ export class GameService {
           newPlayerNettoScore = playerStatistic.nettoScore + (newGamePoint.moneyball?.multiplierForShooter ?? 1) * newGamePoint.pointValue * newGamePoint.multiplier;
           newPlayerBruttoScore = playerStatistic.bruttoScore + newGamePoint.pointValue;
           newPlayerShotsTaken = playerStatistic.shotsTaken + 1;
-          newPlayerPointValueScored = playerStatistic.pointValueScored;
-          const pointValueScoredUpdate = (newPlayerPointValueScored.get(newGamePoint.pointValue)?? 0) + 1;
-          newPlayerPointValueScored.set(newGamePoint.pointValue, pointValueScoredUpdate);
+          newPlayerPointValueScored = [...playerStatistic.pointValueScored];
+          newPlayerPointValueScored[newGamePoint.pointValue] += 1;
           newPlayerAdditiveScore = [...playerStatistic.additiveScore]
           newPlayerAdditiveScore.push(newPlayerNettoScore);
       }
@@ -156,6 +155,7 @@ export class GameService {
   });
   this.statisticsHistory.push(newStatistic);
   this.currentStatisticSubject.next(newStatistic);
+  console.log(this.currentStatisticSubject.getValue().playerStatistics[0].pointValueScored)
   }
 
   getMoneyballEnabled(){

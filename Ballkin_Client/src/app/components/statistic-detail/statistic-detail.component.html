@@ -12,8 +12,10 @@
         [statisticValue]="statisticInDetail.playerStatistics[0].avgBruttoScore"/>
         
         <app-statistic-card
+        [shotsTaken] = "statisticInDetail.playerStatistics[0].shotsTaken"
+        [bruttoScore] = "statisticInDetail.playerStatistics[0].bruttoScore"
         [statisticName]="'Ø Point Value'"
-        [statisticValueArray]="mapToArray(statisticInDetail.playerStatistics[0].avgPointValueScored)"/>
+        [statisticValueArray]="statisticInDetail.playerStatistics[0].avgPointValueScored"/>
         
     </div>
     <div class="statistic-item">
@@ -27,8 +29,10 @@
         [statisticName]="'Ø Brutto Score'"
         [statisticValue]="statisticInDetail.playerStatistics[1].avgBruttoScore"/>
         <app-statistic-card
+        [shotsTaken] = "statisticInDetail.playerStatistics[1].shotsTaken"
+        [bruttoScore] = "statisticInDetail.playerStatistics[1].bruttoScore"
         [statisticName]="'Ø Point Value'"
-        [statisticValueArray]="mapToArray(statisticInDetail.playerStatistics[1].avgPointValueScored)"/>    
+        [statisticValueArray]="statisticInDetail.playerStatistics[1].avgPointValueScored"/>    
         
 
     </div>

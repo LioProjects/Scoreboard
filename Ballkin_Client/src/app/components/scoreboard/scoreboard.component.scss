@@ -6,8 +6,18 @@
     flex-direction: column;
 }
 
+.viewport-background {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: url('../../../assets/backgrounds/basketball-court.jpg');
+    background-position: center 50%;
+    background-size: auto 160%;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+}
 .scoreboard{
-    height: 50%;
+    height: 75%;
     display: flex;
     justify-content: space-between;
 
@@ -17,13 +27,22 @@
     display: flex;
     align-items: center;
 }
+.player-selector-right{
+    justify-content: flex-end;
+    margin-right: 7%;
+}
+
+.player-selector-left{
+    justify-content: flex-start;
+    margin-left: 7%;
+}
 .player-scoreboard{
     height: 100%;
     width: 30%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: gray;
+    margin-inline: 2%;
 }
 .player-button-container{
     height: 35%;
@@ -38,7 +57,9 @@
     align-items: center;
     display: flex;
     font-size: 15vh;
-    background-color: darkgray;
+    color: white;
+    background-color: rgba(0,0,0,0.7);
+    border-radius: 20px;
 }
 
 .scoreboard-center{
@@ -54,24 +75,27 @@
     font-size: 3cqmin;
     margin: 2%;
     padding: 2%;
+    border-radius: 20px;
 }
 
 .scoreboard-graph{
     height: 100%;
+    background-color: rgba(0,0,0,0.5);
     width: 100%;
+    border-radius: 20px;
 }
 
 .player-shots-taken{
     position: absolute;
-    left: 1%;
-    top: 1%;
+    left: 20px;
+    top: 20px;
     font-size: 2vh;
 }
 
 .avg-point-value{
     position: absolute;
-    left: 1%;
-    bottom: 1%;
+    left: 20px;
+    bottom: 20px;
     font-size: 2vh;
 }
 
@@ -87,7 +111,7 @@
     position: relative;
     display: flex;
     width: 100%;
-    height: 20%;
+    height: 25%;
 }
 
 .moneyball-switch{
@@ -106,4 +130,8 @@
 
 .control-button{
     font-size: 2.5cqmin;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    flex-grow: 1;
+    border-radius: 20px;
 }

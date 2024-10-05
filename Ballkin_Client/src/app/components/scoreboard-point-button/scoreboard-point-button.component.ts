@@ -23,4 +23,8 @@ export class ScoreboardPointButtonComponent {
       this.gameService.recordPlayerScore(this.player, this.pointValue);
     }
   }
+
+  round(number: number): number{
+    return Math.round(number);
+  }
 }

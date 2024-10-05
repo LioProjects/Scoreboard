@@ -10,12 +10,12 @@
         <ng-container *ngFor="let value of statisticValueArray; let i = index">
           <div class="statistic-card-value-array" *ngIf="value > 0" 
                [style.width.%]="value" 
-               [style.background-color]="getColor(value)">
+               [style.background-color]="getColor(i)">
             <div>
               {{i}}
             </div> 
             <div>
-              {{ value }}
+              {{ round(value) }}
             </div>
           </div>
         </ng-container>

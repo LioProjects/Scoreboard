@@ -17,22 +17,7 @@ export class GameApiService {
   async getGames(): Promise<Game[]> {
     try {
       const response = await axios.get(STATISTIC_ENDPOINT);
-      const games = response.data.map((gameData: any) => {
-        gameData.playerStatistics.forEach((statistic: any) => {
-          statistic.pointValueScored = new Map<number, number>(
-            Object.entries(statistic.pointValueScored).map(([key, value]) => {
-              return [Number(key), Number(value)]; 
-            })
-          );
-          statistic.avgPointValueScored = new Map<number, number>(
-            Object.entries(statistic.avgPointValueScored).map(([key, value]) => {
-              return [Number(key), Number(value)]; 
-            })
-          );
-        });
-        return new Game(gameData.playerStatistics);
-      });
-      return games as Game[];
+      return response.data;
     } catch (error) {
       console.error('Error fetching games:', error);
       throw error;
@@ -42,7 +27,7 @@ export class GameApiService {
   // Create a new game
   async createGame(gameData: Game): Promise<Game> {
     try {
-      const response = await axios.post(STATISTIC_ENDPOINT, this.convertGameToGameWithoutMaps(gameData));
+      const response = await axios.post(STATISTIC_ENDPOINT, gameData);
       return response.data;
     } catch (error) {
       console.error('Error creating game:', error);
@@ -58,22 +43,5 @@ export class GameApiService {
       console.error('Error deleting game:', error);
       throw error;
     }
-  }
-
-  convertGameToGameWithoutMaps(game: Game){
-    const statisticArray = game.playerStatistics.map(statistic => ({
-    playerId : statistic.playerId,
-    nettoScore: statistic.nettoScore,
-    bruttoScore: statistic.bruttoScore,
-    shotsTaken: statistic.shotsTaken,
-    avgBruttoScore: statistic.avgBruttoScore,
-    pointValueScored: Object.fromEntries(statistic.pointValueScored.entries()), 
-    avgPointValueScored: Object.fromEntries(statistic.avgPointValueScored.entries()),
-    sufferedMalus: statistic.sufferedMalus,
-    additiveScore: statistic.additiveScore
-    })
-    )
-    const convertedGame = { playerStatistics: statisticArray };
-    return convertedGame;
   }
 }

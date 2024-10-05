@@ -26,16 +26,4 @@ export class StatisticDetailComponent {
     }
     return this.playerService.getPlayerNameById(playerId);
   }
-  
-  //todo: why do i need the undefined here
-  mapToArray(map: Map<number, number> | undefined): number[]{
-    if (!map) {
-      return [];
-  }
-  const newArray: number[] = []
-  map.forEach((value, key) => {
-    newArray[key] = value;
-  });
-  return newArray;
-  }
 }
