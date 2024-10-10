@@ -3,6 +3,7 @@ import { Player } from '../../models/player/player.model';
 import { Statistic } from '../../models/statistic/statistic.model';
 import { Game } from '../../models/game/game.model';
 import { Injectable } from '@angular/core';
+import { PlayerStatistic } from '../../models/player-statistic.model';
 
 const BASE_URL = 'http://localhost:5000'; // Adjust to your backend URL
 const STATISTIC_ENDPOINT = `${BASE_URL}/statistics`;
@@ -17,7 +18,8 @@ export class GameApiService {
   async getGames(): Promise<Game[]> {
     try {
       const response = await axios.get(STATISTIC_ENDPOINT);
-      return response.data;
+      //Manually assign the prototype so instanceof works
+      return response.data.map((game: any) => Object.setPrototypeOf(game, Game.prototype));
     } catch (error) {
       console.error('Error fetching games:', error);
       throw error;
@@ -44,4 +46,15 @@ export class GameApiService {
       throw error;
     }
   }
+
+  async getPlayerStatistics(): Promise<PlayerStatistic[]>{
+    try{
+      const response = await axios.get(`${STATISTIC_ENDPOINT}/players`);
+      return response.data.map((playerStatistic: any) => Object.setPrototypeOf(playerStatistic, PlayerStatistic.prototype));
+    } catch (error){
+      console.error('Error fetching PlayerStatistics:', error )
+      throw error;
+    }
+  }
+
 }

@@ -48,6 +48,8 @@ export class GameService {
       {id: 3, multiplierForShooter: 3, multiplierForOpponent: -1},
       {id: 2, multiplierForShooter: 2, multiplierForOpponent: 0},
       {id: 3, multiplierForShooter: 3, multiplierForOpponent: -1},
+      {id: 3, multiplierForShooter: 3, multiplierForOpponent: -1},
+      {id: 2, multiplierForShooter: 2, multiplierForOpponent: 0},
     ]
   )
   moneyBallQueueSubject$ = this.moneyBallQueueSubject.asObservable();
@@ -93,7 +95,7 @@ export class GameService {
     }
     this.statisticsHistory.pop();
     this.currentStatisticSubject.next(this.statisticsHistory[this.statisticsHistory.length-1])
-    let possibleUndoneMoneyball = this.gamePointsSubject.value[this.gamePointsSubject.value.length-1].moneyball;
+    let possibleUndoneMoneyball = this.gamePointsSubject.value[this.gamePointsSubject.value.length-1]?.moneyball;
     if (possibleUndoneMoneyball){
       this.moneyBallQueueSubject.next([...this.moneyBallQueueSubject.getValue(), possibleUndoneMoneyball])
     }
@@ -102,6 +104,9 @@ export class GameService {
   }
 
   saveGame(){
+    if (this.currentStatisticSubject.getValue().playerStatistics.length === 0){
+      return
+    }
     this.gameApiService.createGame(this.currentStatisticSubject.getValue())
   }
 
@@ -155,7 +160,6 @@ export class GameService {
   });
   this.statisticsHistory.push(newStatistic);
   this.currentStatisticSubject.next(newStatistic);
-  console.log(this.currentStatisticSubject.getValue().playerStatistics[0].pointValueScored)
   }
 
   getMoneyballEnabled(){

@@ -7,13 +7,13 @@ import { OneVsOneGameModeState } from '../../game-modes/one-vs-one-game-mode/one
 import { GameModeState } from '../../interfaces/game-mode-state/game-mode-state';
 import { Moneyball } from '../../models/moneyball/moneyball.model';
 import { Player } from '../../models/player/player.model';
-import { Statistic } from '../../models/statistic/statistic.model';
 import { GameService } from '../../services/game/game.service';
 import { MoneyballQueueComponent } from "../moneyball-queue/moneyball-queue.component";
 import { PlayerSelectorComponent } from "../player-selector/player-selector.component";
 import { ScoreboardGraphComponent } from "../scoreboard-graph/scoreboard-graph.component";
 import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/scoreboard-point-button.component';
 import { Game } from '../../models/game/game.model';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-scoreboard',
@@ -40,7 +40,7 @@ export class ScoreboardComponent {
 
 
   
-    constructor(private gameService: GameService) {
+    constructor(private gameService: GameService, private router: Router) {
     }
   
     ngOnInit() {
@@ -115,6 +115,10 @@ export class ScoreboardComponent {
         this.moneyballEnabled = this.gameService.getMoneyballEnabled()
     }
 
+    routeToStatistics(){
+      this.router.navigate(['/statistics'])
+    }
+
     getGamemodes(): GameModeState[]{
       return this.gameService.getGameModes()
     }
@@ -133,6 +137,5 @@ export class ScoreboardComponent {
     getPlayerStatistic(playerId: number){
       return this.currentStatistic.playerStatistics.find(statistic => statistic.playerId === playerId);
     }
-      
   }
 

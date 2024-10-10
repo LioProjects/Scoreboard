@@ -18,34 +18,33 @@ export class PlayerService {
   constructor() { }
 
   //Todo: When to invalidate cashe
-  getBackendPlayers(): Observable<Player[]> {
+  getPlayers(): Promise<Player[]> {
     if (this.cachedPlayers) {
-      return of(this.cachedPlayers);
+      return Promise.resolve(this.cachedPlayers); // Return cached value as a resolved promise
     }
-
-    return from(
-      axios.get<Player[]>(this.PLAYER_ENDPOINT).then(response => {
-        this.cachedPlayers = response.data; 
+  
+    return axios.get<Player[]>(this.PLAYER_ENDPOINT)
+      .then(response => {
+        this.cachedPlayers = response.data;
         return this.cachedPlayers;
-      })
-    );
+      });
   }
   
-getPlayerNameById(playerId: number): Observable<string> {
-  return this.getBackendPlayers().pipe(
-    map(players => {
-      const player = players.find(player => player._id === playerId);
-      if (!player) {
-        throw new Error('Player not found');
-      }
-      return player.name;
-    }),
-    catchError(err => {
-      console.error(err.message);
-      return of('Unknown Player');
-    })
-  );
-}
+  getPlayerNameById(playerId: number): Promise<string> {
+    return this.getPlayers() 
+      .then(players => {
+        const player = players.find(player => player._id === playerId);
+        if (!player) {
+          throw new Error('Player not found');
+        }
+        return player.name;
+      })
+      .catch(err => {
+        console.error(err.message);
+        return 'Unknown Player'; 
+      });
+  }
+  
 }
 
 /*

@@ -1,15 +1,22 @@
 .statistics{
+    display: flex;
+    flex-direction: column;
     position: relative;
     height: 100%;
     width: 100%;
 }
+.statistics-header{
+    display: flex;
+    justify-content: space-between;
+    align-self: center;
+    width: 80%;
+    height: 7%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
 
 .statistic-selector{
-    display: block;
     font-size: 3cqmin;
-    margin: 7%;
-    margin-top: 2%;
-    margin-bottom: 2%;
 }
 
 .statistics-container{

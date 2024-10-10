@@ -110,14 +110,20 @@ export class ScoreboardGraphComponent implements OnChanges{
     this.chartOptions.series = [{ data: [] }, { data: [] }];
   }
 
-  private mapToChartData(statistic: Statistic): Observable<{ name: string; data: number[] }> {
-    return this.playerService.getPlayerNameById(statistic.playerId).pipe(
-      map(playerName => ({
+  private async mapToChartData(statistic: Statistic): Promise<{ name: string; data: number[] }> {
+    try {
+      const playerName = await this.playerService.getPlayerNameById(statistic.playerId);
+      return {
         name: playerName || 'Unknown',
         data: statistic.additiveScore
-      }))
-    );
-
+      };
+    } catch (error) {
+      console.error('Error fetching player name:', error);
+      return {
+        name: 'Unknown',
+        data: statistic.additiveScore
+      };
+    }
   }
 
   private determineChartHeight(): number {

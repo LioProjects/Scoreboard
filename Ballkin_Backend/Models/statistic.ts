@@ -7,6 +7,6 @@ export interface IPlayerStatistic {
     winPercentage: number;
     totalBruttoScore: number;
     avgBruttoScore: number;
-    shotsTaken: number;
+    totalShotsTaken: number;
     avgPointValueScored: number[];
 }

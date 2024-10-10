@@ -63,11 +63,12 @@ export class MoneyballQueueComponent implements AfterViewInit, OnChanges {
                 [
                   // keyframes
                   { transform: `translateX(-${this.calculatePercentWidth()}%)` },
-                  { transform: "translateX(0%)" },
+                  { transform: "translateX(0%)"  },
                 ],
                 {
                   // timing options
-                  duration: 500,
+                  duration: 800,
+                  easing: "ease-in-out",
                 },
               );
         }

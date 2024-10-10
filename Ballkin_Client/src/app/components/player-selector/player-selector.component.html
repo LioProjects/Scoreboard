@@ -1,4 +1,6 @@
+<!--Todo: when leaving the page to come back the selectedPlayer is filled with a player but
+the select shows a blank-->
 <select class="player-selector" id="players" name="players"  [(ngModel)]="selectedPlayer" (ngModelChange)="onPlayerSelect($event)">
   <option [ngValue]="null" hidden>Select Player</option>
-  <option *ngFor="let player of (players$ | async)" [ngValue]="player">{{ player.name }}</option>
+  <option *ngFor="let player of (players | async)" [ngValue]="player">{{ player.name }}</option>
 </select>

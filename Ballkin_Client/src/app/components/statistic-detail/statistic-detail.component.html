@@ -1,40 +1,12 @@
-<!--not hardcode with playerstatistic[x] but rather for each player generate one of this. this solves the problem if theres only 1 player in the game that it doesnt crash-->
-<div class="statistic-detail">
-    <div class="statistic-item">
-        <div class="statistic-name-item">
-            {{ playerNameRecon(statisticInDetail.playerStatistics[0].playerId) | async }}
-        </div>
-        <app-statistic-card
-        [statisticName]="'Brutto Score'"
-        [statisticValue]="statisticInDetail.playerStatistics[0].bruttoScore"/>
-        <app-statistic-card
-        [statisticName]="'Ø Brutto Score'"
-        [statisticValue]="statisticInDetail.playerStatistics[0].avgBruttoScore"/>
-        
-        <app-statistic-card
-        [shotsTaken] = "statisticInDetail.playerStatistics[0].shotsTaken"
-        [bruttoScore] = "statisticInDetail.playerStatistics[0].bruttoScore"
-        [statisticName]="'Ø Point Value'"
-        [statisticValueArray]="statisticInDetail.playerStatistics[0].avgPointValueScored"/>
-        
+<div class="statistic-detail" [ngStyle]="{'grid-template-columns': 'repeat(' + statsToShow.length + ', 1fr)'}">
+    <div *ngFor="let stat of statsToShow" class="statistic-item">
+        <div class="statistic-name-item">{{ stat.playerName }}</div>
+        <app-statistic-card *ngFor="let item of stat.statArray"
+            [statisticName]="item.statisticName"
+            [statisticValue]="item.statisticValue">
+        </app-statistic-card>
     </div>
-    <div class="statistic-item">
-        <div class="statistic-name-item">
-            {{ playerNameRecon(statisticInDetail.playerStatistics[1]?.playerId) | async }}
-        </div>
-        <app-statistic-card
-        [statisticName]="'Brutto Score'"
-        [statisticValue]="statisticInDetail.playerStatistics[1].bruttoScore"/>
-        <app-statistic-card
-        [statisticName]="'Ø Brutto Score'"
-        [statisticValue]="statisticInDetail.playerStatistics[1].avgBruttoScore"/>
-        <app-statistic-card
-        [shotsTaken] = "statisticInDetail.playerStatistics[1].shotsTaken"
-        [bruttoScore] = "statisticInDetail.playerStatistics[1].bruttoScore"
-        [statisticName]="'Ø Point Value'"
-        [statisticValueArray]="statisticInDetail.playerStatistics[1].avgPointValueScored"/>    
-        
-
-    </div>
-    <app-scoreboard-graph class="diagram-item" [currentStatistic]="statisticInDetail"/>
+    
+        <app-scoreboard-graph *ngIf="gameStatistic" class="diagram-item" [currentStatistic]="gameStatistic"></app-scoreboard-graph>
+    
 </div>

@@ -1,30 +1,27 @@
 export class PlayerStatistic {
-    playerId: string;
-    totalGamesPlayed: number;
+    playerId: number;
+    numberOfGamesPlayed: number;
     winPercentage: number;
     totalBruttoScore: number;
     avgBruttoScore: number;
     totalShotsTaken: number;
-    pointValueScored: Map<number, number>;
-    avgPointValueScored: Map<number, number>;
+    avgPointValueScored: number[];
 
     constructor(
-        playerId: string,
-        totalGamesPlayed: number,
+        playerId: number,
+        numberOfGamesPlayed: number,
         winPercentage: number,
         totalBruttoScore: number,
         avgBruttoScore: number,
         totalShotsTaken: number,
-        pointValueScored: Map<number, number>,
-        avgPointValueScored: Map<number, number>
+        avgPointValueScored: number[]
       ) {
         this.playerId = playerId;
-        this.totalGamesPlayed = totalGamesPlayed;
+        this.numberOfGamesPlayed = numberOfGamesPlayed;
         this.winPercentage = winPercentage;
         this.totalBruttoScore = totalBruttoScore;
         this.avgBruttoScore = avgBruttoScore;
         this.totalShotsTaken = totalShotsTaken;
-        this.pointValueScored = pointValueScored;
         this.avgPointValueScored = avgPointValueScored;
       }
 }

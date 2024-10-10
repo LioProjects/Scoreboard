@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { Player } from '../../models/player/player.model';
 import { PlayerService } from '../../services/player/player.service';
 
@@ -17,10 +16,14 @@ export class PlayerSelectorComponent{
   @Input() selectedPlayer: Player | null = null;
   @Output() selectedPlayerChange = new EventEmitter<Player>();
   
-  players$: Observable<Player[]>;
+  players: Promise<Player[]>;
+
+  ngOnInit(){
+    //console.log(this.selectedPlayer)
+  }
 
   constructor(private playerService: PlayerService) {
-    this.players$ = this.playerService.getBackendPlayers();
+    this.players = this.playerService.getPlayers();
   }
 
   onPlayerSelect(player: Player) {

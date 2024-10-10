@@ -44,8 +44,7 @@ statisticRoute.delete('/:id', async (req, res) => {
   }
 })
 
-statisticRoute.get('/player', async (req, res) => {
-  console.log("hallo")
+statisticRoute.get('/players', async (req, res) => {
   try {
     const players = await Player.find();
 
@@ -64,14 +63,14 @@ statisticRoute.get('/player', async (req, res) => {
           return total + (statistic ? statistic.bruttoScore : 0);
         }, 0);
 
-        const shotsTaken = playerGames.reduce((total, game) => {
+        const totalShotsTaken = playerGames.reduce((total, game) => {
           const statistic = game.playerStatistics.find(
             (stat) => stat.playerId.toString() === player._id.toString()
           );
           return total + (statistic ? statistic.shotsTaken : 0);
         }, 0);
 
-        const avgBruttoScore = shotsTaken > 0 ? Math.round((totalBruttoScore / shotsTaken) * 100) / 100 : 0;
+        const avgBruttoScore = totalShotsTaken > 0 ? Math.round((totalBruttoScore / totalShotsTaken) * 100) / 100 : 0;
 
         // Initialize an array of zeros with the length of pointValueScored
         const totalPointValueScored: number[] = [0, 0, 0, 0, 0];
@@ -88,7 +87,7 @@ statisticRoute.get('/player', async (req, res) => {
         });
 
         const avgPointValueScored = totalPointValueScored.map((value) =>
-          shotsTaken > 0 ? Math.round((value / shotsTaken) * 1000) /10 : 0
+          totalShotsTaken > 0 ? Math.round((value / totalShotsTaken) * 1000) /10 : 0
         );
 
         // Calculate wins by comparing player's score to opponent's score
@@ -116,7 +115,7 @@ statisticRoute.get('/player', async (req, res) => {
           winPercentage,
           totalBruttoScore,
           avgBruttoScore,
-          shotsTaken,
+          totalShotsTaken,
           avgPointValueScored
         };
 

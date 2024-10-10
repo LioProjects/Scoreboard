@@ -2,7 +2,7 @@
 <div class="viewport">
     <div class="scoreboard">
         <div class="player-scoreboard">
-            <app-player-selector class="player-selector player-selector-left"  (selectedPlayerChange)="onPlayer1Change($event)"></app-player-selector>
+            <app-player-selector class="player-selector player-selector-left" (selectedPlayerChange)="onPlayer1Change($event)"></app-player-selector>
             <div class="player-points">
                 <div class="player-shots-taken">
                     {{playerOne ? (getPlayerStatistic(playerOne._id)?.shotsTaken ?? 0) : 0}}
@@ -12,22 +12,32 @@
                     avg: {{playerOne ? (getPlayerStatistic(playerOne._id)?.avgBruttoScore ?? 0) : 0}}
                 </div>
             </div>
-            <div class="player-button-container">
-                <app-scoreboard-point-button [pointValue]="0" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[0] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="1" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[1] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="2" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[2] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="3" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[3] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="4" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[4] ?? 0): 0"></app-scoreboard-point-button>
+            <div class="player-buttons-container">
+                <app-scoreboard-point-button class="player-button-container" [pointValue]="0" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[0] ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button class="player-button-container" [pointValue]="1" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[1] ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button class="player-button-container" [pointValue]="2" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[2] ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button class="player-button-container" [pointValue]="3" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[3] ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button class="player-button-container" [pointValue]="4" [player]="playerOne" [pointValuePercentage]="playerOne ? (getPlayerStatistic(playerOne._id)?.avgPointValueScored?.[4] ?? 0): 0"></app-scoreboard-point-button>
             </div>
         </div>
         <div class="scoreboard-center">
-            <select class="game-mode-title" (change)="onGameModeSelect($event)">
-                <option *ngFor="let gameMode of getGamemodes()" [ngValue]="gameMode">{{ gameMode.getName() }}</option>
-            </select>
+            <div class="scoreboard-center-header">
+                <div class="icon" (click)="routeToStatistics()">
+                    <img src="../../../assets/icons/moneyball/statistic-icon.png">
+                </div>
+                <select class="game-mode-title" (change)="onGameModeSelect($event)">
+                    <option *ngFor="let gameMode of getGamemodes()" [ngValue]="gameMode">{{ gameMode.getName() }}</option>
+                </select>
+                <div class="icon" (click)="toggelMoneyball()">
+                    <img 
+                        [src]="moneyballEnabled ? '../../../assets/icons/moneyball/moneyball-icon-rgb.png' : '../../../assets/icons/moneyball/moneyball-icon-grayscale.png'" 
+                        alt="Moneyball Icon">
+                </div>
+            </div>
             <app-scoreboard-graph class="scoreboard-graph" [currentStatistic]="currentStatistic"></app-scoreboard-graph>
         </div>
         <div class="player-scoreboard">
-            <app-player-selector class="player-selector player-selector-right"  (selectedPlayerChange)="onPlayer2Change($event)"></app-player-selector>
+            <app-player-selector class="player-selector player-selector-right" (selectedPlayerChange)="onPlayer2Change($event)"></app-player-selector>
             <div class="player-points">
                 <div class="player-shots-taken">
                     {{playerTwo ? (getPlayerStatistic(playerTwo._id)?.shotsTaken ?? 0) : 0}}
@@ -37,7 +47,7 @@
                     avg: {{playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgBruttoScore ?? 0) : 0}}
                 </div>
             </div>
-            <div class="player-button-container">
+            <div class="player-buttons-container">
                 <app-scoreboard-point-button [pointValue]="0" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgPointValueScored?.[0] ?? 0): 0"></app-scoreboard-point-button>
                 <app-scoreboard-point-button [pointValue]="1" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgPointValueScored?.[1] ?? 0): 0"></app-scoreboard-point-button>
                 <app-scoreboard-point-button [pointValue]="2" [player]="playerTwo" [pointValuePercentage]="playerTwo ? (getPlayerStatistic(playerTwo._id)?.avgPointValueScored?.[2] ?? 0): 0"></app-scoreboard-point-button>
@@ -46,13 +56,9 @@
             </div>
         </div>
     </div>
-    <div class="moneyball-queue-and-control-buttons">
+    <div class="control-buttons-container">
         <app-moneyball-queue *ngIf="moneyballEnabled" class="moneyball-queue-container" [moneyballQueue]="moneyballQueue" [currentStatistic]="currentStatistic"/>
         <div class="control-buttons">
-            <div class="moneyball-switch">
-                <input type="checkbox" (change)="toggelMoneyball()">  
-              Moneyballs
-            </div>   
             <button class="control-button" (click)="undo()">Undo</button>
             <button class="control-button" (click)="resetGame()">Reset</button>
             <button class="control-button" (click)="saveGame()">Save</button>
