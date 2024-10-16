@@ -1,0 +1,18 @@
+<button (click)="toggleAddPlayerForm()" class="add-player-button">Add New Player</button>
+
+  <!-- Add Player Form (Visible when formVisible is true) -->
+<div *ngIf="formVisible" class="add-player-form">
+  <form (ngSubmit)="addNewPlayer()">
+    <input 
+      type="text" 
+      [(ngModel)]="newPlayerName" 
+      name="newPlayerName" 
+      placeholder="Enter Player Name" 
+      required />
+    
+    <!-- Error message if name already exists -->
+    <div *ngIf="errorMessage" class="error-message">{{errorMessage}}</div>
+    <button type="submit">Save Player</button>
+    <button type="button" (click)="toggleAddPlayerForm()">Cancel</button>
+  </form>
+</div>

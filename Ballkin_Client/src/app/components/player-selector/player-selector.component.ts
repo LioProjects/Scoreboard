@@ -12,22 +12,24 @@ import { PlayerService } from '../../services/player/player.service';
   styleUrl: './player-selector.component.scss'
 })
 
-export class PlayerSelectorComponent{
+export class PlayerSelectorComponent {
   @Input() selectedPlayer: Player | null = null;
-  @Output() selectedPlayerChange = new EventEmitter<Player>();
+  @Output() selectedPlayerChange = new EventEmitter<{ previousPlayer: Player | null, newPlayer: Player | null }>();
+
+  players: Player[] = [];
+
+  private previousPlayer: Player | null = null;
   
-  players: Promise<Player[]>;
-
-  ngOnInit(){
-    //console.log(this.selectedPlayer)
-  }
-
   constructor(private playerService: PlayerService) {
-    this.players = this.playerService.getPlayers();
+    this.playerService.getPlayers().then(playerList => this.players = playerList)
   }
 
-  onPlayerSelect(player: Player) {
-    this.selectedPlayerChange.emit(player);  
+  ngOnInit() {
+    this.previousPlayer = this.selectedPlayer; // Set initial previous player value
   }
 
+  onPlayerSelect(newPlayer: Player) {
+    this.selectedPlayerChange.emit({ previousPlayer: this.previousPlayer, newPlayer });
+    this.previousPlayer = newPlayer;
+  }
 }

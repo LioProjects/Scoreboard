@@ -24,16 +24,14 @@ import { Router } from '@angular/router';
 })
 export class ScoreboardComponent {
     //Todo: could omit playerOne(Two) because they are already in the currentStatistic. only an idea
-    playerOne: Player | null = null;
-    playerTwo: Player | null = null;
+    selectedPlayers: Player[] = [];
     currentStatistic: Game = new Game();
     moneyballQueue: Moneyball[] = [];
     moneyballEnabled: boolean = false;
 
     gameMode: GameModeState = new OneVsOneGameModeState(this.gameService);
 
-    playerOneSubscription: Subscription = new Subscription();
-    playerTwoSubscription: Subscription = new Subscription();
+    selectedPlayersSubscription: Subscription = new Subscription();
     currentStatisticSubscription: Subscription = new Subscription();
     gameModeSubscription: Subscription = new Subscription()
     moneyBallQueueSubscription: Subscription = new Subscription();
@@ -44,22 +42,15 @@ export class ScoreboardComponent {
     }
   
     ngOnInit() {
-      this.subscribeToPlayerOne();
-      this.subscribeToPlayerTwo();
+      this.subscribeToSelectedPlayers();
       this.subscribeToCurrentStatistic();
       this.subscribeToGameMode();
       this.subscribeToMoneyballQueue();
     }
 
-    subscribeToPlayerOne(){
-      this.playerOneSubscription = this.gameService.playerOne$.subscribe(playerOne => {
-        this.playerOne = playerOne;
-      })
-    }
-
-    subscribeToPlayerTwo(){
-      this.playerTwoSubscription = this.gameService.playerTwo$.subscribe(playerTwo => {
-        this.playerTwo = playerTwo;
+    subscribeToSelectedPlayers(){
+      this.selectedPlayersSubscription = this.gameService.selectedPlayers$.subscribe(playerOne => {
+        this.selectedPlayers = playerOne;
       })
     }
 
@@ -82,19 +73,13 @@ export class ScoreboardComponent {
     }
   
     ngOnDestroy() {
-      this.playerOneSubscription.unsubscribe();
-      this.playerTwoSubscription.unsubscribe();
       this.currentStatisticSubscription.unsubscribe();
       this.gameModeSubscription.unsubscribe();
       this.moneyBallQueueSubscription.unsubscribe();
     }
-  
-    onPlayer1Change(player: Player) {
-      this.gameService.setPlayerOne(player);
-    }
-  
-    onPlayer2Change(player: Player) {
-      this.gameService.setPlayerTwo(player);
+
+    onPlayerChange({ previousPlayer, newPlayer }: { previousPlayer: Player | null, newPlayer: Player | null }){
+      this.gameService.setPlayer(previousPlayer, newPlayer);
     }
   
     undo() {

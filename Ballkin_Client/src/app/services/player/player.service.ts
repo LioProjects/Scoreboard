@@ -13,13 +13,13 @@ export class PlayerService {
 
   readonly PLAYER_ENDPOINT = `${this.BASE_URL}/players`
 
-  private cachedPlayers: Player[] | null = null; // Cache variable
+  private cachedPlayers: Player[] = [];
 
   constructor() { }
 
   //Todo: When to invalidate cashe
   getPlayers(): Promise<Player[]> {
-    if (this.cachedPlayers) {
+    if (this.cachedPlayers.length > 0) {
       return Promise.resolve(this.cachedPlayers); // Return cached value as a resolved promise
     }
   
@@ -44,7 +44,40 @@ export class PlayerService {
         return 'Unknown Player'; 
       });
   }
-  
+
+  addPlayer(name: string): Promise<Player[]> {
+    return this.getPlayers()
+      .then(players => {
+        // Check for duplicate player name
+        if (players.find(player => player.name === name)) {
+          console.log("lesgo")
+          return Promise.reject(new Error("Player Name already exists"));
+        }
+        // Make API call to add the player
+        console.log(players)
+        console.log(players.find(player => player.name === name))
+        return axios.post<Player>(this.PLAYER_ENDPOINT, { name })
+          .then(response => {
+            this.cachedPlayers.push(response.data); // Update the cached list
+            return this.cachedPlayers; // Return updated player list
+          });
+      });
+  }
+
+  deletePlayer(id: number): Promise<Player[]> {
+    return this.getPlayers()
+      .then(players => {
+        const playerToDelete = players.find(player => player._id === id);
+        if (!playerToDelete) {
+          return Promise.reject(new Error("Player doesn't Exist"))
+        }
+        return axios.delete(this.PLAYER_ENDPOINT + `/${id}`)
+          .then(() => {
+            this.cachedPlayers.filter(player => player._id === id)
+            return this.cachedPlayers
+          })
+      })
+  }
 }
 
 /*

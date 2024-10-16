@@ -16,10 +16,9 @@ playerRoute.get('/', async (req, res) => {
 
 playerRoute.post('/', async (req, res) => {
     const clientPlayer: IPlayer = req.body;
-
     try{
         const newPlayer = await Player.create(clientPlayer);
-        res.status(500).send(newPlayer);
+        res.status(201).send(newPlayer);
         console.log(newPlayer);
     } catch (error) {
         console.error('Error creating player', error);

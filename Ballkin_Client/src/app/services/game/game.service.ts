@@ -18,25 +18,25 @@ export class GameService {
   private gameApiService: GameApiService;
 
   constructor() {
-    this.gameApiService = new GameApiService(); // Create an instance of GameService
+    this.gameApiService = new GameApiService();
   }
   private gameEnded: boolean = false;
 
+  //Keeps track of every registered Point with its attribute
   private gamePointsSubject = new BehaviorSubject<PlayerGamePoint[]>([]);
   gamePoints$ = this.gamePointsSubject.asObservable();
 
+  //Keeps track of the score evolution without point to point details
   private statisticsHistory: Game[] = [new Game()];
 
-  //observable currentstatistic
   private currentStatisticSubject = new BehaviorSubject<Game>(new Game());
   currentStatistic$ = this.currentStatisticSubject.asObservable();
 
-  //Player Observables
-  private playerOneSubject = new BehaviorSubject<Player | null>(null);
-  playerOne$ = this.playerOneSubject.asObservable();
+  private selectedPlayersSubject = new BehaviorSubject<Player[]>([])
+  selectedPlayers$ = this.selectedPlayersSubject.asObservable();
 
-  private playerTwoSubject = new BehaviorSubject<Player | null>(null);
-  playerTwo$ = this.playerTwoSubject.asObservable();
+  private currentPlayerTurnSubject = new BehaviorSubject<Player | null>(null);
+  currentPlayerTurn$ = this.currentPlayerTurnSubject.asObservable();
 
   private gameModeSubject = new BehaviorSubject<GameModeState>(new OneVsOneGameModeState(this));
   gameMode$ = this.gameModeSubject.asObservable();
@@ -61,12 +61,46 @@ export class GameService {
     new RoadToOneHundredGameModeState(this)
   ]
 
-  setPlayerOne(player: Player){
-    this.playerOneSubject.next(player);
+  setPlayer(previousPlayer: Player | null, player: Player | null){
+    const previousPlayerIndex = previousPlayer ? this.selectedPlayersSubject.getValue().findIndex(_player => _player._id === previousPlayer._id) : -1;
+    if (previousPlayerIndex < 0){
+      //add current Player
+      if (player) {
+        this.selectedPlayersSubject.next([...this.selectedPlayersSubject.getValue(), player]);
+        this.currentPlayerTurnSubject.next(player)
+      }
+    } else{
+      const newPlayers: Player[] = this.selectedPlayersSubject.getValue();
+      //update previous Player to current Player
+      if (player){
+        newPlayers[previousPlayerIndex] = player;
+        this.currentPlayerTurnSubject.next(player)
+        console.log(newPlayers)
+      }
+      //remove previous Player
+      else{
+        newPlayers.splice(previousPlayerIndex, 1);
+      }
+      this.selectedPlayersSubject.next([...newPlayers])
+    }
+    console.error(this.selectedPlayersSubject.getValue())
   }
 
-  setPlayerTwo(player: Player){
-    this.playerTwoSubject.next(player);
+  setNextPlayerTurn() {
+    const players = this.selectedPlayersSubject.getValue();
+    const currentPlayer = this.currentPlayerTurnSubject.getValue();
+  
+    if (!players.length) {
+      console.warn('No players available');
+      return;
+    }
+  
+    // Find the index of the current player
+    const currentPlayerTurnIndex = players.findIndex(player => player === currentPlayer);
+  
+    // Calculate the next player index and update
+    const nextPlayerTurnIndex = (currentPlayerTurnIndex + 1) % players.length;
+    this.currentPlayerTurnSubject.next(players[nextPlayerTurnIndex]);
   }
 
   setGameStatus(isGameEnded: boolean){
@@ -82,7 +116,7 @@ export class GameService {
     this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
     this.calculateStatistics(newGamePoint);
   }
-
+//= this.currentPlayerTurnSubject.getValue() als default value geben
   recordPlayerScore(player: Player, pointValue: number) {
   const moneyballInPlay = this.moneyballEnabled ? this.popMoneyball() : undefined;
   const newGamePoint = new PlayerGamePoint(player, pointValue, moneyballInPlay);
@@ -95,9 +129,12 @@ export class GameService {
     }
     this.statisticsHistory.pop();
     this.currentStatisticSubject.next(this.statisticsHistory[this.statisticsHistory.length-1])
-    let possibleUndoneMoneyball = this.gamePointsSubject.value[this.gamePointsSubject.value.length-1]?.moneyball;
-    if (possibleUndoneMoneyball){
-      this.moneyBallQueueSubject.next([...this.moneyBallQueueSubject.getValue(), possibleUndoneMoneyball])
+    let undonePlayerGamePoint = this.gamePointsSubject.value[this.gamePointsSubject.value.length-1];
+    if (undonePlayerGamePoint?.moneyball){
+      this.moneyBallQueueSubject.next([...this.moneyBallQueueSubject.getValue(), undonePlayerGamePoint.moneyball])
+    }
+    else if (undonePlayerGamePoint?.player){
+      this.currentPlayerTurnSubject.next(undonePlayerGamePoint.player);
     }
     this.gamePointsSubject.next([...this.gamePointsSubject.value.slice(0, -1)])
 
@@ -160,6 +197,7 @@ export class GameService {
   });
   this.statisticsHistory.push(newStatistic);
   this.currentStatisticSubject.next(newStatistic);
+  setTimeout(() => this.setNextPlayerTurn(), 500);
   }
 
   getMoneyballEnabled(){
