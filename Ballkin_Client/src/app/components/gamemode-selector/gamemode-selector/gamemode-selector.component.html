@@ -1,0 +1,13 @@
+<button (click)="toggleDropdown()" class="select-game-mode-button">Select Game Mode</button>
+
+<div *ngIf="dropdownVisible" class="game-mode-dropdown">
+    <div *ngFor="let gameMode of gameModeList">
+      <input 
+        type="radio" 
+        id="{{ gameMode.getName() }}" 
+        [value]="gameMode"
+        [checked]="isSelected(gameMode)"
+        (change)="onGameModeSelect(gameMode, $event)" />
+      <label for="{{ gameMode.getName() }}">{{ gameMode.getName() }}</label>
+    </div>
+  </div>

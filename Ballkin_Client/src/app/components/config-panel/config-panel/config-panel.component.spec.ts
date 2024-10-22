@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PlayerSelectorComponent } from './player-selector.component';
+import { ConfigPanelComponent } from './config-panel.component';
 
-describe('PlayerSelectorComponent', () => {
-  let component: PlayerSelectorComponent;
-  let fixture: ComponentFixture<PlayerSelectorComponent>;
+describe('ConfigPanelComponent', () => {
+  let component: ConfigPanelComponent;
+  let fixture: ComponentFixture<ConfigPanelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PlayerSelectorComponent]
+      imports: [ConfigPanelComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(PlayerSelectorComponent);
+    fixture = TestBed.createComponent(ConfigPanelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

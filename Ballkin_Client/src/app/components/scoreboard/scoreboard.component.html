@@ -1,8 +1,18 @@
-<div class="viewport-background"></div>
 <div class="viewport">
+    <div class="settings-icon" (click)="toggleSettings()">
+        <img src="../../../assets/icons/moneyball/settings-icon.png">
+    </div>
+    <div class="statistic-icon" (click)="routeToStatistics()">
+        <img src="../../../assets/icons/moneyball/statistic-icon.png">
+    </div>
+    <app-config-panel class="config-panel-container" [ngClass]="{'open': settingsVisible}"/>
+    <div class="scoreboard-header">
+    </div>
     <div class="scoreboard">
-        <div class="player-scoreboard">
-            <app-player-selector class="player-selector player-selector-left" (selectedPlayerChange)="onPlayerChange($event)"></app-player-selector>
+        <div class="scoreboard-item">
+            <div class="scoreboard-item-header">
+                {{selectedPlayers[0]?.name}}
+            </div>
             <div class="player-points">
                 <div class="player-shots-taken">
                     {{selectedPlayers[0] ? (getPlayerStatistic(selectedPlayers[0]._id)?.shotsTaken ?? 0) : 0}}
@@ -13,31 +23,28 @@
                 </div>
             </div>
             <div class="player-buttons-container">
-                <app-scoreboard-point-button class="player-button-container" [pointValue]="0" [player]="selectedPlayers[0]" [pointValuePercentage]="selectedPlayers[0] ? (getPlayerStatistic(selectedPlayers[0]._id)?.avgPointValueScored?.[0] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button class="player-button-container" [pointValue]="1" [player]="selectedPlayers[0]" [pointValuePercentage]="selectedPlayers[0] ? (getPlayerStatistic(selectedPlayers[0]._id)?.avgPointValueScored?.[1] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button class="player-button-container" [pointValue]="2" [player]="selectedPlayers[0]" [pointValuePercentage]="selectedPlayers[0] ? (getPlayerStatistic(selectedPlayers[0]._id)?.avgPointValueScored?.[2] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button class="player-button-container" [pointValue]="3" [player]="selectedPlayers[0]" [pointValuePercentage]="selectedPlayers[0] ? (getPlayerStatistic(selectedPlayers[0]._id)?.avgPointValueScored?.[3] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button class="player-button-container" [pointValue]="4" [player]="selectedPlayers[0]" [pointValuePercentage]="selectedPlayers[0] ? (getPlayerStatistic(selectedPlayers[0]._id)?.avgPointValueScored?.[4] ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button    class="button-item" *ngFor="let pointValue of pointValueList; let i = index" 
+                                                [pointValue]="pointValue" 
+                                                [player]="selectedPlayers[0]" 
+                                                [pointValuePercentage]="selectedPlayers[0] ? (getPlayerStatistic(selectedPlayers[0]._id)?.avgPointValueScored?.[i] ?? 0): 0"/>
             </div>
         </div>
-        <div class="scoreboard-center">
-            <div class="scoreboard-center-header">
-                <div class="icon" (click)="routeToStatistics()">
-                    <img src="../../../assets/icons/moneyball/statistic-icon.png">
+        <div class="scoreboard-item" *ngIf="true">
+            <div class="scoreboard-item-header">
+                <div>
+                    {{gameMode.getName()}}
                 </div>
-                <select class="game-mode-title" (change)="onGameModeSelect($event)">
-                    <option *ngFor="let gameMode of getGamemodes()" [ngValue]="gameMode">{{ gameMode.getName() }}</option>
-                </select>
-                <div class="icon" (click)="toggelMoneyball()">
-                    <img 
-                        [src]="moneyballEnabled ? '../../../assets/icons/moneyball/moneyball-icon-rgb.png' : '../../../assets/icons/moneyball/moneyball-icon-grayscale.png'" 
-                        alt="Moneyball Icon">
-                </div>
+                <img class="moneyball-icon"
+                (click)="toggelMoneyball()"
+                [src]="moneyballEnabled ? '../../../assets/icons/moneyball/moneyball-icon-rgb.png' : '../../../assets/icons/moneyball/moneyball-icon-grayscale.png'" 
+                alt="Moneyball Icon">
             </div>
             <app-scoreboard-graph class="scoreboard-graph" [currentStatistic]="currentStatistic"></app-scoreboard-graph>
         </div>
-        <div class="player-scoreboard">
-            <app-player-selector class="player-selector player-selector-right" (selectedPlayerChange)="onPlayerChange($event)"></app-player-selector>
+        <div class="scoreboard-item" *ngIf="selectedPlayers.length >= 2">
+            <div class="scoreboard-item-header">
+                {{selectedPlayers[1]?.name}}
+            </div>
             <div class="player-points">
                 <div class="player-shots-taken">
                     {{selectedPlayers[1] ? (getPlayerStatistic(selectedPlayers[1]._id)?.shotsTaken ?? 0) : 0}}
@@ -48,11 +55,10 @@
                 </div>
             </div>
             <div class="player-buttons-container">
-                <app-scoreboard-point-button [pointValue]="0" [player]="selectedPlayers[1]" [pointValuePercentage]="selectedPlayers[1] ? (getPlayerStatistic(selectedPlayers[1]._id)?.avgPointValueScored?.[0] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="1" [player]="selectedPlayers[1]" [pointValuePercentage]="selectedPlayers[1] ? (getPlayerStatistic(selectedPlayers[1]._id)?.avgPointValueScored?.[1] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="2" [player]="selectedPlayers[1]" [pointValuePercentage]="selectedPlayers[1] ? (getPlayerStatistic(selectedPlayers[1]._id)?.avgPointValueScored?.[2] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="3" [player]="selectedPlayers[1]" [pointValuePercentage]="selectedPlayers[1] ? (getPlayerStatistic(selectedPlayers[1]._id)?.avgPointValueScored?.[3] ?? 0): 0"></app-scoreboard-point-button>
-                <app-scoreboard-point-button [pointValue]="4" [player]="selectedPlayers[1]" [pointValuePercentage]="selectedPlayers[1] ? (getPlayerStatistic(selectedPlayers[1]._id)?.avgPointValueScored?.[4] ?? 0): 0"></app-scoreboard-point-button>
+                <app-scoreboard-point-button    class="button-item" *ngFor="let pointValue of pointValueList; let i = index" 
+                                                [pointValue]="pointValue" 
+                                                [player]="selectedPlayers[1]" 
+                                                [pointValuePercentage]="selectedPlayers[1] ? (getPlayerStatistic(selectedPlayers[1]._id)?.avgPointValueScored?.[i] ?? 0): 0"/>
             </div>
         </div>
     </div>

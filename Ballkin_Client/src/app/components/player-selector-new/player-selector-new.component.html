@@ -1,0 +1,14 @@
+<button (click)="toggleDropdown()" class="select-players-button">Select Players</button>
+
+<!-- Dropdown that shows checkboxes -->
+<div *ngIf="dropdownVisible" class="player-dropdown">
+  <div *ngFor="let player of playerList">
+    <input 
+      type="checkbox" 
+      id="{{ player._id }}" 
+      [value]="player"
+      [checked]="isSelected(player)"
+      (change)="onPlayerToggle(player, $event)" />
+    <label for="{{ player._id }}">{{ player.name }}</label>
+  </div>
+</div>

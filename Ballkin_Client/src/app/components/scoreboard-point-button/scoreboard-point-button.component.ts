@@ -54,7 +54,7 @@ export class ScoreboardPointButtonComponent {
 
   showScoringAnimation(){
     this.animated = true;
-    setTimeout(() => this.animated = false, 1000);
+    setTimeout(() => this.animated = false, 500);
   }
 
   @HostListener('window:keyup', ['$event'])

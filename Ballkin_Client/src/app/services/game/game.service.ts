@@ -9,6 +9,7 @@ import { Player } from '../../models/player/player.model';
 import { Statistic } from '../../models/statistic/statistic.model';
 import { Game } from '../../models/game/game.model';
 import { GameApiService } from '../api/game.api.service';
+import { PlayerService } from '../player/player.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,16 +23,18 @@ export class GameService {
   }
   private gameEnded: boolean = false;
 
-  //Keeps track of every registered Point with its attribute
-  private gamePointsSubject = new BehaviorSubject<PlayerGamePoint[]>([]);
-  gamePoints$ = this.gamePointsSubject.asObservable();
+  //List of all playerGamePoints in a Game
+  private playerGamePointHistoryList = new BehaviorSubject<PlayerGamePoint[]>([]);
+  //gamePoints$ = this.playerGamePointHistoryList.asObservable();
 
-  //Keeps track of the score evolution without point to point details
-  private statisticsHistory: Game[] = [new Game()];
+  //List of Game Snapshots (History of how Game evolved)
+  private gameHistoryList: Game[] = [new Game()];
 
-  private currentStatisticSubject = new BehaviorSubject<Game>(new Game());
-  currentStatistic$ = this.currentStatisticSubject.asObservable();
 
+  private currentGameSubject = new BehaviorSubject<Game>(new Game());
+  currentGame$ = this.currentGameSubject.asObservable();
+
+  //List of selected Players that are playing in the current Game
   private selectedPlayersSubject = new BehaviorSubject<Player[]>([])
   selectedPlayers$ = this.selectedPlayersSubject.asObservable();
 
@@ -61,29 +64,11 @@ export class GameService {
     new RoadToOneHundredGameModeState(this)
   ]
 
-  setPlayer(previousPlayer: Player | null, player: Player | null){
-    const previousPlayerIndex = previousPlayer ? this.selectedPlayersSubject.getValue().findIndex(_player => _player._id === previousPlayer._id) : -1;
-    if (previousPlayerIndex < 0){
-      //add current Player
-      if (player) {
-        this.selectedPlayersSubject.next([...this.selectedPlayersSubject.getValue(), player]);
-        this.currentPlayerTurnSubject.next(player)
-      }
-    } else{
-      const newPlayers: Player[] = this.selectedPlayersSubject.getValue();
-      //update previous Player to current Player
-      if (player){
-        newPlayers[previousPlayerIndex] = player;
-        this.currentPlayerTurnSubject.next(player)
-        console.log(newPlayers)
-      }
-      //remove previous Player
-      else{
-        newPlayers.splice(previousPlayerIndex, 1);
-      }
-      this.selectedPlayersSubject.next([...newPlayers])
+  setPlayer(playerList: Player[]){
+    this.selectedPlayersSubject.next([...playerList]);
+    if(playerList.length>0){
+      this.currentPlayerTurnSubject.next(playerList[0]);
     }
-    console.error(this.selectedPlayersSubject.getValue())
   }
 
   setNextPlayerTurn() {
@@ -109,60 +94,59 @@ export class GameService {
 
   setGameMode(gameMode: GameModeState){
     this.gameModeSubject.next(gameMode);
-    console.log("gamemode changed to ", gameMode.getName())
   }
 
   addGamePoint(newGamePoint: PlayerGamePoint) {
-    this.gamePointsSubject.next([...this.gamePointsSubject.value, newGamePoint]);
+    this.playerGamePointHistoryList.next([...this.playerGamePointHistoryList.value, newGamePoint]);
     this.calculateStatistics(newGamePoint);
   }
 //= this.currentPlayerTurnSubject.getValue() als default value geben
-  recordPlayerScore(player: Player, pointValue: number) {
+//Todo: this shold be like api and public whereas all the internal functionalities should be private
+  recordPlayerScore(player: Player , pointValue: number) {
   const moneyballInPlay = this.moneyballEnabled ? this.popMoneyball() : undefined;
   const newGamePoint = new PlayerGamePoint(player, pointValue, moneyballInPlay);
-  this.gameModeSubject.getValue().recordPlayerScore(newGamePoint, this.currentStatisticSubject.getValue())
+  this.gameModeSubject.getValue().recordPlayerScore(newGamePoint, this.currentGameSubject.getValue())
   }
 
   undo(){
-    if (this.statisticsHistory.length === 1){
+    if (this.gameHistoryList.length === 1){
       return;
     }
-    this.statisticsHistory.pop();
-    this.currentStatisticSubject.next(this.statisticsHistory[this.statisticsHistory.length-1])
-    let undonePlayerGamePoint = this.gamePointsSubject.value[this.gamePointsSubject.value.length-1];
+    this.gameHistoryList.pop();
+    this.currentGameSubject.next(this.gameHistoryList[this.gameHistoryList.length-1])
+    let undonePlayerGamePoint = this.playerGamePointHistoryList.value[this.playerGamePointHistoryList.value.length-1];
     if (undonePlayerGamePoint?.moneyball){
       this.moneyBallQueueSubject.next([...this.moneyBallQueueSubject.getValue(), undonePlayerGamePoint.moneyball])
     }
     else if (undonePlayerGamePoint?.player){
       this.currentPlayerTurnSubject.next(undonePlayerGamePoint.player);
     }
-    this.gamePointsSubject.next([...this.gamePointsSubject.value.slice(0, -1)])
+    this.playerGamePointHistoryList.next([...this.playerGamePointHistoryList.value.slice(0, -1)])
 
   }
 
   saveGame(){
-    if (this.currentStatisticSubject.getValue().playerStatistics.length === 0){
+    if (this.currentGameSubject.getValue().playerStatistics.length === 0){
       return
     }
-    this.gameApiService.createGame(this.currentStatisticSubject.getValue())
+    this.gameApiService.createGame(this.currentGameSubject.getValue())
   }
 
   resetGame(){
-    this.gamePointsSubject.next([]);
-    this.statisticsHistory = [];
-    this.currentStatisticSubject.next(new Game());
+    this.playerGamePointHistoryList.next([]);
+    this.gameHistoryList = [];
+    this.currentGameSubject.next(new Game());
     this.gameEnded = false;
   }
 
-  calculateStatistics(newGamePoint: PlayerGamePoint){
-    const currentStatistic = this.currentStatisticSubject.getValue();
-    let newStatistic = new Game([]);
-    
-    if (!currentStatistic.playerStatistics.find(statistic => statistic.playerId === newGamePoint.player._id)){
-      currentStatistic.playerStatistics.push(new Statistic(newGamePoint.player._id))
+  private calculateStatistics(newGamePoint: PlayerGamePoint){
+    const currentGame = this.currentGameSubject.getValue();
+    let newGame = new Game([]);    
+    if (!currentGame.playerStatistics.find(statistic => statistic.playerId === newGamePoint.player._id)){
+      currentGame.playerStatistics.push(new Statistic(newGamePoint.player._id))
     }
 
-    currentStatistic.playerStatistics.forEach((playerStatistic) => {
+    currentGame.playerStatistics.forEach((playerStatistic) => {
       let newPlayerNettoScore;
       let newPlayerBruttoScore;
       let newPlayerShotsTaken;
@@ -193,11 +177,12 @@ export class GameService {
         newPlayerAdditiveScore ?? playerStatistic.additiveScore,
         newPlayerSufferedMalus ?? playerStatistic.sufferedMalus
         )
-        newStatistic.playerStatistics.push(newPlayerStatistic)
+        newGame.playerStatistics.push(newPlayerStatistic)
   });
-  this.statisticsHistory.push(newStatistic);
-  this.currentStatisticSubject.next(newStatistic);
-  setTimeout(() => this.setNextPlayerTurn(), 500);
+  this.gameHistoryList.push(newGame);
+  this.currentGameSubject.next(newGame);
+  //Todo: why do i need this, if not points are registered for both players
+  setTimeout(() => this.setNextPlayerTurn(), 0);
   }
 
   getMoneyballEnabled(){

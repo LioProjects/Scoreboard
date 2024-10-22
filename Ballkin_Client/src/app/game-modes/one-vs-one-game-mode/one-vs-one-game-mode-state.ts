@@ -7,7 +7,7 @@ import { GameService } from "../../services/game/game.service";
 
 export class OneVsOneGameModeState implements GameModeState{
 
-    private name: string = "Normal Game"
+    private name: string = "1 vs 1"
 
     constructor(private gameService: GameService){}
 

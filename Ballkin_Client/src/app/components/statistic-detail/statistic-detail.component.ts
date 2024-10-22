@@ -61,7 +61,6 @@ export class StatisticDetailComponent {
       })
     } 
     else if (this.statisticInDetail instanceof PlayerStatistic){
-      console.error(this.statisticInDetail)
       this.statsToShow.push(
         {
           playerName:this.getPlayerNameById(this.statisticInDetail.playerId),

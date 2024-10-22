@@ -1,0 +1,14 @@
+<button (click)="toggleDropdown()" class="select-point-value-button">Select Point-Values</button>
+
+<!-- Dropdown that shows checkboxes -->
+<div *ngIf="dropdownVisible" class="point-value-dropdown">
+  <div *ngFor="let pointValue of pointValues">
+    <input 
+      type="checkbox" 
+      id="pointValue" 
+      [value]="pointValue"
+      [checked]="isSelected(pointValue)"
+      (change)="onPointValueToggle(pointValue, $event)" />
+    <label for="{{ pointValue }}">{{ pointValue }}</label>
+  </div>
+</div>

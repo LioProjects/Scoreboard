@@ -1,0 +1,11 @@
+<div class="config-pannel">
+    <div class="config-title">Configuration</div>
+    <app-gamemode-selector class="config-item"/>
+    <app-add-player class="config-item"/>
+    <app-player-selector-new class="config-item"/>
+    <app-point-value-selector class="config-item"/>
+    <div class="config-item">
+        <input type="checkbox" id="forceTakeTurns" [checked]="forceTakeTurns" (change)="onTakeTurnsToggle($event)"/>
+        <label for="forceTakeTurns">Take Turns</label>
+    </div>
+</div>

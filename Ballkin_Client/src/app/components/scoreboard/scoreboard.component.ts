@@ -1,6 +1,6 @@
 
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { OneVsOneGameModeState } from '../../game-modes/one-vs-one-game-mode/one-vs-one-game-mode-state';
@@ -9,18 +9,19 @@ import { Moneyball } from '../../models/moneyball/moneyball.model';
 import { Player } from '../../models/player/player.model';
 import { GameService } from '../../services/game/game.service';
 import { MoneyballQueueComponent } from "../moneyball-queue/moneyball-queue.component";
-import { PlayerSelectorComponent } from "../player-selector/player-selector.component";
 import { ScoreboardGraphComponent } from "../scoreboard-graph/scoreboard-graph.component";
 import { ScoreboardPointButtonComponent } from '../scoreboard-point-button/scoreboard-point-button.component';
 import { Game } from '../../models/game/game.model';
 import { Router } from '@angular/router';
+import { ConfigPanelComponent } from '../config-panel/config-panel/config-panel.component';
+import { ConfigurationService } from '../../services/configuration/configuration.service';
 
 @Component({
     selector: 'app-scoreboard',
     standalone: true,
     templateUrl: './scoreboard.component.html',
     styleUrl: './scoreboard.component.scss',
-    imports: [ScoreboardPointButtonComponent, PlayerSelectorComponent, ScoreboardGraphComponent, MoneyballQueueComponent, FormsModule, CommonModule]
+    imports: [ConfigPanelComponent, ScoreboardPointButtonComponent, ScoreboardGraphComponent, MoneyballQueueComponent, FormsModule, CommonModule]
 })
 export class ScoreboardComponent {
     //Todo: could omit playerOne(Two) because they are already in the currentStatistic. only an idea
@@ -28,6 +29,9 @@ export class ScoreboardComponent {
     currentStatistic: Game = new Game();
     moneyballQueue: Moneyball[] = [];
     moneyballEnabled: boolean = false;
+    pointValueList: number[] = []
+
+    settingsVisible: boolean = true;
 
     gameMode: GameModeState = new OneVsOneGameModeState(this.gameService);
 
@@ -35,18 +39,26 @@ export class ScoreboardComponent {
     currentStatisticSubscription: Subscription = new Subscription();
     gameModeSubscription: Subscription = new Subscription()
     moneyBallQueueSubscription: Subscription = new Subscription();
+    pointValueListSubscription: Subscription = new Subscription();
 
 
   
-    constructor(private gameService: GameService, private router: Router) {
+    constructor(private gameService: GameService, private configurationService: ConfigurationService, private router: Router) {
     }
-  
+
     ngOnInit() {
       this.subscribeToSelectedPlayers();
-      this.subscribeToCurrentStatistic();
+      this.subscribeToCurrentGame();
       this.subscribeToGameMode();
       this.subscribeToMoneyballQueue();
+      this.subscribeToPointValueList();
     }
+
+  subscribeToPointValueList() {
+    this.pointValueListSubscription = this.configurationService.pointValueList$.subscribe(pointValueList => {
+      this.pointValueList = pointValueList
+    });
+  }
 
     subscribeToSelectedPlayers(){
       this.selectedPlayersSubscription = this.gameService.selectedPlayers$.subscribe(playerOne => {
@@ -54,8 +66,8 @@ export class ScoreboardComponent {
       })
     }
 
-    subscribeToCurrentStatistic(){
-      this.currentStatisticSubscription = this.gameService.currentStatistic$.subscribe(currentStatistic => {
+    subscribeToCurrentGame(){
+      this.currentStatisticSubscription = this.gameService.currentGame$.subscribe(currentStatistic => {
         this.currentStatistic = currentStatistic;
       })
     }
@@ -78,21 +90,20 @@ export class ScoreboardComponent {
       this.moneyBallQueueSubscription.unsubscribe();
     }
 
-    onPlayerChange({ previousPlayer, newPlayer }: { previousPlayer: Player | null, newPlayer: Player | null }){
-      this.gameService.setPlayer(previousPlayer, newPlayer);
-    }
-  
     undo() {
       this.gameService.undo();
     }
   
     resetGame() {
       this.gameService.resetGame();
-      console.log(this.currentStatistic)
     }
   
     saveGame() {
       this.gameService.saveGame();
+    }
+
+    toggleSettings(){
+      this.settingsVisible = !this.settingsVisible;
     }
 
     toggelMoneyball(){

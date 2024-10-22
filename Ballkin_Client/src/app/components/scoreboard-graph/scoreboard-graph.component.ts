@@ -80,12 +80,16 @@ export class ScoreboardGraphComponent implements OnChanges{
           colors: ["#f3f3f3", "transparent"],
           opacity: 0.5
         }
-      },      
+      },
+      //Todo: I Think yaxis and xaxis property doesnt work      
       yaxis:{
-        range: 5
+        show: false,
+        labels:{
+          show: false,
+        },
       },
       xaxis: {
-        categories: Array.from({ length: 1000 }, (_, index) => index),
+        show: false,
       },
     };
   }

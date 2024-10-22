@@ -45,11 +45,11 @@
 .point-button {
     position: relative;
     height:100%;
-    width: 5vw;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-radius: 20px;
+    flex-grow: 1;
 
 }
 .point-button.scoring-animation::before,
@@ -69,12 +69,12 @@
 //360-var
 .point-button.scoring-animation::before {
   background-image: conic-gradient(from var(--angle), transparent, transparent, transparent, transparent, transparent, transparent, transparent, blue);
-  animation: 1s spin linear infinite;
+  animation: 0.5s spin linear infinite;
 }
 
 .point-button.scoring-animation::after {
   background-image: conic-gradient(from var(--angle2), transparent, transparent, transparent, transparent, transparent, transparent, transparent, blue);
-  animation: 1s spinAntiClockWise linear infinite;
+  animation: 0.5s spinAntiClockWise linear infinite;
 }
 
 

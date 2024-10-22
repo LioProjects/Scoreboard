@@ -4,10 +4,10 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
 }
-
-.viewport-background {
+//Todo: Deactivated for now
+viewport::before {
+    content: '';
     position: absolute;
     height: 100%;
     width: 100%;
@@ -17,33 +17,43 @@
     background-repeat: no-repeat;
     opacity: 0.6;
 }
+.config-panel-container{
+    position: absolute;
+    top: 7%;
+    left: 0;
+    transform: translateX(-100%);
+    background-color: #f0f0f0;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    z-index: 10;
+    transition: transform 1000ms ease-in-out
+}
+.config-panel-container.open{
+    transform: translateX(0)
+}
+.scoreboard-header{
+    height: 7%;
+}
 .scoreboard{
-    height: 75%;
+    flex: 1;
     display: flex;
-    justify-content: space-between;
 
 }
-.player-selector{
+.control-buttons-container{
+    margin-top: 3vh;
+    position: relative;
+    display: flex;
+    width: 100%;
     height: 20%;
+}
+.scoreboard-item{
+    position: relative;
     display: flex;
-    align-items: center;
-}
-.player-selector-right{
-    justify-content: flex-end;
-    margin-right: 7%;
-}
-
-.player-selector-left{
-    justify-content: flex-start;
-    margin-left: 7%;
-}
-.player-scoreboard{
-    height: 100%;
-    width: 30%;
-    display: flex;
+    flex: 1;
     flex-direction: column;
-    justify-content: space-between;
-    margin-inline: 2%;
+    align-items: stretch;
+    justify-content: flex-end;
+    margin-inline: 1%;
 }
 .player-buttons-container{
     position: relative;
@@ -51,12 +61,28 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
+    margin-top: 1%;
 }
 .player-button-container{
     position: relative;
 }
-
+.scoreboard-item-header{
+    position: relative;
+    font-size: 6cqmin;
+    padding-bottom: 2%;
+    height: 10%;
+    display: flex;
+    justify-content: space-around;
+}
+.moneyball-icon{
+    position: absolute;
+    right: 0; 
+    top: 50%;
+    translate: 0 -50%;
+    height: 70%;
+}
 .player-points{
+    margin-bottom: 1%;
     position: relative;
     height: 35%;
     justify-content: center;
@@ -66,23 +92,17 @@
     color: white;
     background-color: rgba(0,0,0,0.7);
     border-radius: 20px;
+
 }
 
-.scoreboard-center{
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 39%;
-    align-items: center;
-}
+
 .scoreboard-center-header {
     display: flex;
     justify-content: space-around;
     height: 10%; /* Same height for the entire header */
     width: 100%;
     align-items: center;
-    margin: 5%;
+    flex: 1;
 }
 
 .game-mode-title {
@@ -92,14 +112,40 @@
     border-radius: 20px;
     height: 100%; /* Makes the select element the full height of its parent */
 }
-
+.button-item{
+    display: flex;
+    flex: 1 1;
+    width: 0;
+    margin-inline: 1%;
+}
+.button-item:first-child{
+    margin-left: 0;
+}
+.button-item:last-child{
+    margin-right: 0;
+}
+.settings-icon{
+    position: absolute;
+    height: 5%;
+    width: auto;
+    top: 20px;
+    left: 20px;
+}
+.statistic-icon{
+    position: absolute;
+    height: 5%;
+    width: auto;
+    top: 20px;
+    right: 20px;
+}
 .icon {
     height: 100%; /* Makes the icon container the full height of its parent */
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
+.statistic-icon img,
+.settings-icon img,
 .icon img {
     max-height: 80%; /* Ensures the image scales to the container's height */
     width: auto;
@@ -107,23 +153,22 @@
 }
 
 .scoreboard-graph{
-    height: 100%;
     background-color: rgba(0,0,0,0.5);
-    width: 100%;
     border-radius: 20px;
+    height: 87%;
 }
 
 .player-shots-taken{
     position: absolute;
-    left: 20px;
-    top: 20px;
+    left: 2%;
+    top: 3%;
     font-size: 2vh;
 }
 
 .avg-point-value{
     position: absolute;
-    left: 20px;
-    bottom: 20px;
+    left: 2%;
+    bottom: 3%;
     font-size: 2vh;
 }
 
@@ -134,13 +179,7 @@
 }
 
 
-.control-buttons-container{
-    margin-top: 3vh;
-    position: relative;
-    display: flex;
-    width: 100%;
-    height: 20%;
-}
+
 
 .control-buttons{
     height: 100%;

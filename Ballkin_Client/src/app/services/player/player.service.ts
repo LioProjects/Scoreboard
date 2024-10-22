@@ -50,12 +50,9 @@ export class PlayerService {
       .then(players => {
         // Check for duplicate player name
         if (players.find(player => player.name === name)) {
-          console.log("lesgo")
           return Promise.reject(new Error("Player Name already exists"));
         }
         // Make API call to add the player
-        console.log(players)
-        console.log(players.find(player => player.name === name))
         return axios.post<Player>(this.PLAYER_ENDPOINT, { name })
           .then(response => {
             this.cachedPlayers.push(response.data); // Update the cached list
