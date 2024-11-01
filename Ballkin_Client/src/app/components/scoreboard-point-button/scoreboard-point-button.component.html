@@ -1,4 +1,4 @@
-<button class="point-button" [ngClass]="{'scoring-animation': animated}" [disabled]="isButtonDisabled()" (click)="onPointButtonClick()">
+<button class="point-button" [ngClass]="{'scoring-animation': animated}" [disabled]="!enabled" (click)="onPointButtonClick()">
     <div class="point-value">
         {{pointValue}}
     </div>

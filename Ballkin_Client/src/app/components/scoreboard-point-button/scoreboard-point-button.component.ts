@@ -10,13 +10,13 @@ import { consumerPollProducersForChange } from '@angular/core/primitives/signals
   standalone: true,
   imports: [CommonModule],
   templateUrl: './scoreboard-point-button.component.html',
-  styleUrl: './scoreboard-point-button.component.scss'
+  styleUrl: './scoreboard-point-button.component.scss',
 })
 
 //todo: input of gameservice
 export class ScoreboardPointButtonComponent {
   @Input() player!: Player | null;
-  @Input() pointValue!: number
+  @Input() pointValue!: number;
   @Input() pointValuePercentage: number = 0;
   playerTurns: Player | null = null;
   playerTurn: Subscription = new Subscription();
@@ -26,15 +26,14 @@ export class ScoreboardPointButtonComponent {
 
   constructor(private gameService: GameService) {}
 
-  ngOnChanges(){
-    this.playerTurn = this.gameService.currentPlayerTurn$.subscribe(playerTurn =>{
-      this.playerTurns= playerTurn
-      if (this.player && this.player === playerTurn){
-        this.enabled = true;
-      } else {
-        this.enabled = false;
+  ngOnInit() {
+    this.playerTurn = this.gameService.currentPlayerTurn$.subscribe(
+      (playerTurn) => {
+        this.playerTurns = playerTurn;
+        this.enabled = this.player != null && this.player === playerTurn;
+        console.warn('switch player on button', this.player, this.enabled);
       }
-    });
+    );
   }
 
   onPointButtonClick() {
@@ -44,26 +43,47 @@ export class ScoreboardPointButtonComponent {
     }
   }
 
-  round(number: number): number{
+  round(number: number): number {
     return Math.round(number);
   }
 
-  isButtonDisabled(): boolean{
+  isButtonDisabled(): boolean {
     return !this.player || !this.enabled;
   }
 
-  showScoringAnimation(){
+  showScoringAnimation() {
     this.animated = true;
-    setTimeout(() => this.animated = false, 500);
+    setTimeout(() => (this.animated = false), 500);
   }
+/*
+  HostLIstener() {
+    this.handleKeyDown1();
+    this.handleKeyDown2();
+    this.handleKeyDown3();
+    this.handleKeyDown4();
+    this.handleKeyDown5();
+    this.handleKeyDown6();
+  }*/
 
-  @HostListener('window:keyup', ['$event'])
+  @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
     if (!this.enabled) {
       return;
     }
     if (event.key === `${this.pointValue}`) {
       this.onPointButtonClick();
+
+      //Todo: currently 5 hostlistener. transfer this to scoreboard to have only one. 
+      
+      //Since there are 10 buttons and each one of them are registered to listen...Angular calls them in order of the DOM.
+      //Player 1 is enabled because its his turn. Player 1 scores so the Playerturn in service is called.
+      //This changes the player 2 as playerturn
+      //And this happens before Angular could call the second listener (matching pointbutton of player 2) so now it calls it because its enabled
+      event.stopImmediatePropagation();
     }
+  }
+
+  ngOnDestroy() {
+    this.playerTurn.unsubscribe();
   }
 }

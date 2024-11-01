@@ -6,3 +6,5 @@ cd ./Ballkin_Client
 echo "Starting Client..."
 npm install   
 ng serve
+
+// Todo: power shell 

@@ -10,19 +10,25 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './player-selector-new.component.html',
-  styleUrl: './player-selector-new.component.scss'
+  styleUrl: './player-selector-new.component.scss',
 })
 export class PlayerSelectorNewComponent {
-
-  selectedPlayers: Player[] = []
-  playerList: Player[] = []
+  selectedPlayers: Player[] = [];
+  playerList: Player[] = [];
   dropdownVisible = true;
 
-  constructor(private playerService: PlayerService, private gameService: GameService) {}
+  constructor(
+    private playerService: PlayerService,
+    private gameService: GameService
+  ) {}
 
-  ngOnInit(){
-    this.playerService.getPlayers().then(_playerList => this.playerList = _playerList);
-    this.gameService.selectedPlayers$.subscribe(players => this.selectedPlayers = players)
+  ngOnInit() {
+    this.playerService
+      .getPlayers()
+      .then((_playerList) => (this.playerList = _playerList));
+    this.gameService.selectedPlayers$.subscribe(
+      (players) => (this.selectedPlayers = players)
+    );
   }
 
   toggleDropdown() {
@@ -35,13 +41,14 @@ export class PlayerSelectorNewComponent {
     if (isChecked) {
       this.selectedPlayers.push(player);
     } else {
-      this.selectedPlayers = this.selectedPlayers.filter(p => p._id !== player._id);
+      this.selectedPlayers = this.selectedPlayers.filter(
+        (p) => p._id !== player._id
+      );
     }
     this.gameService.setPlayer(this.selectedPlayers);
   }
 
   isSelected(player: Player): boolean {
-    return this.selectedPlayers.some(p => p._id === player._id);
+    return this.selectedPlayers.some((p) => p._id === player._id);
   }
-
 }

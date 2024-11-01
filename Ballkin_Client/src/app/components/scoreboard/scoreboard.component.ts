@@ -88,6 +88,8 @@ export class ScoreboardComponent {
       this.currentStatisticSubscription.unsubscribe();
       this.gameModeSubscription.unsubscribe();
       this.moneyBallQueueSubscription.unsubscribe();
+      this.selectedPlayersSubscription.unsubscribe();
+      this.pointValueListSubscription.unsubscribe();
     }
 
     undo() {
