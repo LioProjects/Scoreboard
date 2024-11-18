@@ -1,0 +1,14 @@
+<div class="statistics">    <!--12 executions-->
+    <div class="statistics-header">
+        <select class="statistic-selector" [(ngModel)]="selectedStatisticType">
+            <option [ngValue]="'gameStatistics'">Games</option>
+            <option [ngValue]="'playerStatistics'">Player</option>
+        </select>
+        <img class="scoreboard-icon" src="../../../assets/icons/moneyball/scoreboard-icon.png" (click)="routeToScoreboard()"/>
+    </div>
+    <div class="statistics-container">
+    <app-statistics-overview 
+        [playerList]="playerList" 
+        [statistics]="selectedStatisticType === 'gameStatistics' ? gameStatistics : playerStatistics"/>
+    </div>
+</div>

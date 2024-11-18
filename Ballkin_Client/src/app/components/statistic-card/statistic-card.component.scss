@@ -1,0 +1,36 @@
+.statistic-card{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.statistic-card-name, .statistic-card-value{
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    font-size: 3cqmin;
+    overflow: hidden;
+}
+
+.statistic-card-name{
+    background-color: rgba(28, 212, 212, 0.503);
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+}
+.statistic-card-value{
+    background-color: rgb(132, 155, 147);
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+.statistic-card-value-array{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.statistic-card-value-array-text{
+    display: flex;
+}

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { Player } from '../../models/player/player.model';
 import { PlayerService } from '../../services/player/player.service';
 
@@ -14,22 +13,21 @@ import { PlayerService } from '../../services/player/player.service';
 })
 
 export class PlayerSelectorComponent{
-  @Input() selectedPlayer: Player | undefined;
+  @Input() selectedPlayer: Player | null = null;
   @Output() selectedPlayerChange = new EventEmitter<Player>();
   
-  players$: Observable<Player[]>;
+  players: Promise<Player[]>;
+
+  ngOnInit(){
+    //console.log(this.selectedPlayer)
+  }
 
   constructor(private playerService: PlayerService) {
-    this.players$ = this.playerService.getPlayers();
+    this.players = this.playerService.getPlayers();
   }
 
-  //needs rework. check id instead of names (if two names are the same we fucked)
-  onPlayerSelect(event: Event) {
-    const selectedPlayerName = (event.target as HTMLSelectElement).value;
-    this.players$.subscribe(players => {
-      const selectedPlayer = players.find(player => player.name === selectedPlayerName);
-      console.log(selectedPlayerName)
-      this.selectedPlayerChange.emit(selectedPlayer);
-    });
+  onPlayerSelect(player: Player) {
+    this.selectedPlayerChange.emit(player);  
   }
+
 }

@@ -1,0 +1,12 @@
+<div class="statistic-detail" [ngStyle]="{'grid-template-columns': 'repeat(' + statsToShow.length + ', 1fr)'}">
+    <div *ngFor="let stat of statsToShow" class="statistic-item">
+        <div class="statistic-name-item">{{ stat.playerName }}</div>
+        <app-statistic-card *ngFor="let item of stat.statArray"
+            [statisticName]="item.statisticName"
+            [statisticValue]="item.statisticValue">
+        </app-statistic-card>
+    </div>
+    
+        <app-scoreboard-graph *ngIf="gameStatistic" class="diagram-item" [currentStatistic]="gameStatistic"></app-scoreboard-graph>
+    
+</div>

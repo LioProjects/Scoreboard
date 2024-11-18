@@ -5,9 +5,9 @@ import { Injectable } from '@angular/core';
 })
 export class AssetService {
   private moneyballImages: { [id: number]: string } = {
-    1: 'assets/basketball_normal.png',
-    2: 'assets/basketball_red_fire.png',
-    3: 'assets/basketball_ice.png',
+    1: 'assets/icons/moneyball/basketball_normal.png',
+    2: 'assets/icons/moneyball/basketball_red.png',
+    3: 'assets/icons/moneyball/basketball_blue.png',
     // Add more image sources as needed
   };
   constructor() { }

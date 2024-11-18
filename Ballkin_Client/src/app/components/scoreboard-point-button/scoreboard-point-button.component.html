@@ -1,8 +1,8 @@
-<button class="point-button" [disabled]="!player" (click)="onPointButtonClick()">
+<button class="point-button" [ngClass]="{'scoring-animation': animated}" [disabled]="!player" (click)="onPointButtonClick()">
     <div class="point-value">
         {{pointValue}}
     </div>
     <div class="point-percentage">
-        {{pointValuePercentage}} %
+        {{round(pointValuePercentage)}} %
     </div>
 </button>

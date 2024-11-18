@@ -4,10 +4,21 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
+.viewport-background {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: url('../../../assets/backgrounds/basketball-court.jpg');
+    background-position: center 50%;
+    background-size: auto 160%;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+}
 .scoreboard{
-    height: 50%;
+    height: 75%;
     display: flex;
     justify-content: space-between;
 
@@ -17,64 +28,161 @@
     display: flex;
     align-items: center;
 }
+.player-selector-right{
+    justify-content: flex-end;
+    margin-right: 7%;
+}
+
+.player-selector-left{
+    justify-content: flex-start;
+    margin-left: 7%;
+}
 .player-scoreboard{
     height: 100%;
     width: 30%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: gray;
+    margin-inline: 2%;
 }
-.player-button-container{
+.player-buttons-container{
+    position: relative;
     height: 35%;
     width: 100%;
     display: flex;
     justify-content: space-between;
 }
+.player-button-container{
+    position: relative;
+}
+
 .player-points{
     position: relative;
     height: 35%;
-    width: 60%;
     justify-content: center;
     align-items: center;
     display: flex;
     font-size: 15vh;
-    background-color: darkgray;
+    color: white;
+    background-color: rgba(0,0,0,0.7);
+    border-radius: 20px;
+}
+
+.scoreboard-center{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 39%;
+    align-items: center;
+}
+.scoreboard-center-header {
+    display: flex;
+    justify-content: space-around;
+    height: 10%; /* Same height for the entire header */
+    width: 100%;
+    align-items: center;
+    margin: 5%;
+}
+
+.game-mode-title {
+    font-size: 3cqmin;
+    margin: 2%;
+    padding: 2%;
+    border-radius: 20px;
+    height: 100%; /* Makes the select element the full height of its parent */
+}
+
+.icon {
+    height: 100%; /* Makes the icon container the full height of its parent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon img {
+    max-height: 80%; /* Ensures the image scales to the container's height */
+    width: auto;
+    aspect-ratio: 1;
 }
 
 .scoreboard-graph{
-    width: 35%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    width: 100%;
+    border-radius: 20px;
 }
 
 .player-shots-taken{
     position: absolute;
-    left: 1%;
-    top: 1%;
+    left: 20px;
+    top: 20px;
     font-size: 2vh;
 }
 
 .avg-point-value{
     position: absolute;
-    left: 1%;
-    bottom: 1%;
+    left: 20px;
+    bottom: 20px;
     font-size: 2vh;
 }
 
 .moneyball-queue-container{
-    margin-top: 5%;
-    right: 50%;
-    height: 30%;
-    width: 50%;
-    background-color: grey;
+    overflow: hidden;
+    height: 100%;
+    width: 60%;
+}
+
+
+.control-buttons-container{
+    margin-top: 3vh;
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 20%;
 }
 
 .control-buttons{
-    height: 20%;
-    width: 15%;
+    height: 100%;
+    width: 20%;
     position: absolute;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    bottom: 1%;
     right: 1%;
+}
+
+.control-button{
+    background-color: var(--background-color);
+    font-size: 2.5cqmin;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    flex-grow: 1;
+    border-radius: var(--border-radius);
+    position: relative;
+
+    --background-color: #f0f0f0;
+    --border-radius: 20px;
+    --border-size: 5px;
+}
+
+.control-button::after{
+    content: '';
+    background-color: transparent;
+    border-radius: var(--border-radius);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: var(--border-size) solid var(--background-color);
+    transition: top, right, bottom, left, 100ms ease-in-out
+    
+}
+
+.control-button:hover::after{
+    top: calc(var(--border-size) * -2);
+    left: calc(var(--border-size) * -2);
+    right: calc(var(--border-size) * -2);
+    bottom: calc(var(--border-size) * -2);
 }

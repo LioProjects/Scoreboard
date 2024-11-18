@@ -1,0 +1,46 @@
+<div class="statistic-overview"><!--12 executions-->
+  <div class="statistic-overview-table-container"><!--12 executions-->
+    <ng-container *ngIf="gameStatistics?.length">  <!--6 executions-->
+      <table class="statistic-overview-table">
+        <thead>
+          <tr>
+            <th>Player 1</th>
+            <th>Player 2</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let statistic of gameStatistics" (click)="setDetailedStatistic(statistic)" [ngClass]="{'highlight': detailedStatistic === statistic}">
+            <td>{{ getPlayerNameById(statistic.playerStatistics[0].playerId) }}</td>
+            <td>{{ getPlayerNameById(statistic.playerStatistics[1].playerId) }}</td>
+            <td>{{ statistic.playerStatistics[0]?.nettoScore }} : {{ statistic.playerStatistics[1]?.nettoScore }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+    <ng-container *ngIf="playerStatistics?.length">
+      <table class="statistic-overview-table">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Ø P/S</th>
+            <th>Shots Taken</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let statistic of playerStatistics; let i = index" (click)="setDetailedStatistic(statistic)" [ngClass]="{'highlight': detailedStatistic === statistic}">
+            <td>{{ getPlayerNameById(statistic.playerId) }}</td>
+            <td>{{ statistic.avgBruttoScore }}</td>
+            <td>{{ statistic.totalShotsTaken }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+  </div>
+  <div class="statistic-detail-container" *ngIf="detailedStatistic && playerList.length > 0">
+    <app-statistic-detail
+      [statisticInDetail]="detailedStatistic"
+      [getPlayerNameById]="getPlayerNameById"/>
+  </div>
+</div>
+  

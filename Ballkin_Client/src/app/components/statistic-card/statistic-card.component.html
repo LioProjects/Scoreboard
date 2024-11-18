@@ -1,0 +1,26 @@
+<div class="statistic-card">
+    <div class="statistic-card-name">
+        {{statisticName}}
+    </div>
+    <!--Todo: needs improvement. nothing checks wheter any of statisticValue or statisticValueArray in the ts was passed over-->
+    <div class="statistic-card-value" *ngIf="!statisticValue?.length">
+        {{ statisticValue }}
+    </div>
+    <div class="statistic-card-value" *ngIf="statisticValue?.length">
+        <ng-container *ngFor="let value of statisticValue; let i = index">
+          <div class="statistic-card-value-array" *ngIf="value > 0" 
+               [style.width.%]="value" 
+               [style.background-color]="getColor(value)">
+            <div>
+              {{i}}
+            </div> 
+            <div class="statistic-card-value-array-text">
+              {{ round(value) }}
+              <div *ngIf="value > 15">
+                %
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+</div>

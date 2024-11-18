@@ -10,8 +10,10 @@ import {
   ChartComponent,
   NgApexchartsModule
 } from 'ng-apexcharts';
-import { PlayerGamePoint } from '../../models/player-game-point/player-game-point.model';
-import { Player } from '../../models/player/player.model';
+import { Game } from '../../models/game/game.model';
+import { PlayerService } from '../../services/player/player.service';
+import { forkJoin, map, Observable } from 'rxjs';
+import { Statistic } from '../../models/statistic/statistic.model';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -30,46 +32,42 @@ export type ChartOptions = {
   templateUrl: './scoreboard-graph.component.html',
   styleUrl: './scoreboard-graph.component.scss'
 })
-export class ScoreboardGraphComponent implements OnChanges {
-  @Input() gamePoints!: PlayerGamePoint[];
-  @Input() player1!: Player | undefined;
-  @Input() player2!: Player | undefined;
-  @Input() gameMode!: string;
+export class ScoreboardGraphComponent implements OnChanges{
+  //Todo: input if gameEnded show whole graph and not only 12 in the x axis
+  @Input() currentStatistic: Game = new Game();
+
   @ViewChild("chart") chart?: ChartComponent;
+
   public chartOptions!: Partial<ChartOptions> | any;
 
-  constructor() {
+  constructor(private playerService: PlayerService) {
     this.initializeChartOptions();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['gamePoints']) {
-      this.updateChart();
-    }
+  ngOnChanges(changes: SimpleChanges): void {
+    this.updateChart()
   }
 
   private initializeChartOptions() {
     this.chartOptions = {
       series: [
         {
-          name: this.player1?.name,
-          data: [0]
+          data: []
         },
         {
-          name: this.player2?.name,
-          data: [0]
+          data: []
         }
       ],
-      chart: {
-        height: 350,
+      chart: {        
+        height: '100%', 
+        width: "100%",
+        toolbar: {
+          show: false,
+        },
         type: "line",
         zoom: {
           enabled: true,
         }
-      },
-      title: {
-        text: "1v1",
-        align: "left"
       },
       dataLabels: {
         enabled: false
@@ -82,51 +80,86 @@ export class ScoreboardGraphComponent implements OnChanges {
           colors: ["#f3f3f3", "transparent"],
           opacity: 0.5
         }
+      },      
+      yaxis:{
+        range: 5
       },
       xaxis: {
         categories: Array.from({ length: 1000 }, (_, index) => index),
-        range: 15
       },
-      //Todo: adjust y axis to the visible graph so that the lowest value of the graph is on the bottom and the highest is on the top
     };
   }
 
-  private updateChart() {
-    this.chartOptions.series = [
-      {
-        name: this.player1?.name,
-        data: this.getPlayerAdditiveScore(this.player1)
-      },
-      {
-        name: this.player2?.name,
-        data: this.getPlayerAdditiveScore(this.player2)
-      }
-    ];
-
-  }
-
-  private getXaxisLabels(): number[]{
-    const shotsCountPlayer1 = this.gamePoints.filter(x => x.player === this.player1).length;
-    const shotsCountPlayer2 = this.gamePoints.filter(x => x.player === this.player2).length;
-    const maxLength = Math.max(shotsCountPlayer1, shotsCountPlayer2);
-    const xAxisArray = Array.from({ length: maxLength + 1 }, (_, index) => index);
-    return xAxisArray;
-  
-  }
-
-  private getPlayerAdditiveScore(player: Player | undefined): number[] {
-    if (!player) {
-      return [0];
+  private updateChart(): void {
+    if (!this.currentStatistic?.playerStatistics?.length) {
+      this.resetChartSeries();
+      return;
     }
-    let sum = 0;
-    const playerPoints = this.gamePoints
-      .filter(x => x.player === player)
-      .map(x => x.pointValue)
-      .map(x => {
-        sum = sum + x;
-        return sum;
-      });
-  
-    return [0, ...playerPoints];
+
+    const observables = this.currentStatistic.playerStatistics.map(statistic =>
+      this.mapToChartData(statistic)
+    );
+
+    forkJoin(observables).subscribe(seriesData => {
+      this.chartOptions.series = seriesData;
+      this.chartOptions.yaxis.max = this.chartMinClipOff();
+    });
+  }
+
+  private resetChartSeries(): void {
+    this.chartOptions.series = [{ data: [] }, { data: [] }];
+  }
+
+  private async mapToChartData(statistic: Statistic): Promise<{ name: string; data: number[] }> {
+    try {
+      const playerName = await this.playerService.getPlayerNameById(statistic.playerId);
+      return {
+        name: playerName || 'Unknown',
+        data: statistic.additiveScore
+      };
+    } catch (error) {
+      console.error('Error fetching player name:', error);
+      return {
+        name: 'Unknown',
+        data: statistic.additiveScore
+      };
+    }
+  }
+
+  private determineChartHeight(): number {
+    // Get the parent element with the class "scoreboard-center"
+    const scoreboardCenter = document.getElementsByClassName("scoreboard-center")[0];
+    
+    // Check if the element exists
+    if (scoreboardCenter) {
+      // Get the height of the parent element
+      const height = scoreboardCenter.clientHeight;
+      
+      // You may want to log or use the height here
+      console.log("Height of .scoreboard-center:", height);
+      
+      // Return the height
+      return height;
+    } else {
+      // Return a default height or handle the case where the element is not found
+      return 0;
+    }
+  }
+
+  private chartMinClipOff (){
+    let maxNettoScore = -Infinity;
+
+    this.currentStatistic.playerStatistics.forEach(statistic =>{
+      if (statistic.nettoScore > maxNettoScore){
+        maxNettoScore = statistic.nettoScore;
+      }
+    });
+    
+    if (maxNettoScore <= 50){
+      return 0;
+    }
+    else{
+      return  maxNettoScore-50;
+    } 
   }
 }
